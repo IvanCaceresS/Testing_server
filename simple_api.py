@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify
 
 app = Flask(__name__)
 
@@ -13,15 +13,6 @@ def api():
         'status': 'success'
     }
     return jsonify(data)
-
-@app.route('/api/data', methods=['POST'])
-def post_data():
-    received_data = request.get_json()
-    response = {
-        'message': 'Data received',
-        'data': received_data
-    }
-    return jsonify(response), 201
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
