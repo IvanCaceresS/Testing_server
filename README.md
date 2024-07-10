@@ -8,8 +8,7 @@ ssh -i LLAVE.KEY/LLAVE.PEM usuario@IP
 sudo apt update
 sudo apt install python3 python3-venv python3-pip
 python3 -m venv myenv
-source /myenv/bin/activate
-
+source myenv/bin/activate
 
 # Habilitar puerto 80
 sudo apt update
