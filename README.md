@@ -28,11 +28,12 @@ python simple_api.py
 
 ## Fuera del servidor, obtener link de Minecraft Server:
 
-1. Visita: https://www.minecraft.net/es-es/download/server
-2. Haz clic derecho en 'minecraft_server.1.21.jar' y selecciona "copiar link":
-   - https://piston-data.mojang.com/v1/objects/450698d1863ab5180c25d7c804ef0fe6369dd1ba/server.jar
+1. Visita: https://mcversions.net/
+2. Busca la versión de minecraft server que quieras y dale a DOWNLOAD.
+2. Haz clic derecho en 'Dounload Server Jar' y selecciona "copiar dirección del vínculo":
+   - https://piston-data.mojang.com/v1/objects/84194a2f286ef7c14ed7ce0090dba59902951553/server.jar
 3. Reemplaza `piston-data` por `launcher`:
-   - Este link se usará después: https://launcher.mojang.com/v1/objects/450698d1863ab5180c25d7c804ef0fe6369dd1ba/server.jar
+   - Este link se usará después: https://launcher.mojang.com/v1/objects/84194a2f286ef7c14ed7ce0090dba59902951553/server.jar
 
 ## En servidor, sigue los siguientes pasos:
 
@@ -47,13 +48,14 @@ python simple_api.py
     sudo firewall-cmd --reload
     ```
 
-2. Crear el directorio del servidor, descargar el servidor de Minecraft y ejecutar el servidor por primera vez:
+2. Crear el directorio del servidor, descargar el servidor de Minecraft (Utiliza el link que tienes de antes) y ejecutar el servidor por primera vez:
     ```bash
     mkdir ~/minecraft_server && \
     cd ~/minecraft_server && \
-    wget https://launcher.mojang.com/v1/objects/450698d1863ab5180c25d7c804ef0fe6369dd1ba/server.jar && \
-    java -Xmx512M -Xms512M -jar server.jar nogui
+    wget https://launcher.mojang.com/v1/objects/84194a2f286ef7c14ed7ce0090dba59902951553/server.jar && \
+    java -Xmx18G -Xms18G -jar server.jar nogui
     ```
+**NOTA: Saldrá error por el EULA, sigue con los pasos**
 
 3. Aceptar el EULA:
     ```bash
@@ -134,7 +136,7 @@ python simple_api.py
 
 5. Iniciar el servidor con `screen`:
     ```bash
-    screen -S minecraft_server java -Xmx512M -Xms512M -jar server.jar nogui
+    screen -S minecraft_server java -Xmx18G -Xms18G -jar server.jar nogui
     ```
 
 
@@ -157,3 +159,9 @@ python simple_api.py
     java -Xmx1G -Xms1G -jar server.jar nogui
     ```
 - **Para hacer admin del server a un jugador
+
+# AJUSTES VISUALES SERVER MINECRAFT
+- CAMBIAR MOTD: https://mctools.org/motd-creator
+- CAMBIAR IMAGEN: archivo.PNG si o si de 64x64 px : https://www.simpleimageresizer.com/. Luego pegarlo dentro de la carpeta minecraft_server
+
+# PONER MODS AL SERVIDOR
