@@ -152,13 +152,29 @@ python simple_api.py
     ```
 - **Para terminar la sesión de `screen` y detener el servidor:** Vuelve a la sesión y escribe `exit` o presiona `Ctrl + D`.
 
+
+- **Se puede usar el script bash que automatiza todo este proceso:** 
+    ```bash 
+    # Guarda el archivo y dale permisos de ejecución:
+    chmod +x setup_minecraft_server_interactive.sh
+
+    # Ejecuta el script:
+    ./setup_minecraft_server_interactive.sh
+    ```
+
+
+
+
+
 ### Comandos adicionales:
 - **Para iniciar el servidor con diferente memoria asignada:**
     ```bash
     java -Xmx512M -Xms512M -jar server.jar nogui
     java -Xmx1G -Xms1G -jar server.jar nogui
     ```
+
 - **Para hacer admin del server a un jugador
+op nombredeljugador
 
 # AJUSTES VISUALES SERVER MINECRAFT
 - CAMBIAR MOTD: https://mctools.org/motd-creator
