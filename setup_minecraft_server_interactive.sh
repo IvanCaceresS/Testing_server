@@ -207,7 +207,9 @@ max-world-size=29999984
 EOL
 
 # Inicia el servidor con screen
-#screen -dmS minecraft_server java -Xmx$memory -Xms$memory -jar server.jar nogui
-java -Xmx$memory -Xms$memory -jar server.jar nogui
+screen -dmS minecraft_server java -Xmx$memory -Xms$memory -jar server.jar nogui
 
+# Mensaje indicando cómo ver y salir de la consola de screen
 echo "Servidor de Minecraft configurado y ejecutándose en screen."
+echo "Para ver la consola del servidor, usa: screen -r minecraft_server"
+echo "Para salir de la consola pero dejar el servidor ejecutándose, presiona Ctrl + A seguido de D."
