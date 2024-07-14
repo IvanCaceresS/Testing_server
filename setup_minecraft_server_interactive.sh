@@ -45,8 +45,8 @@ prompt_memory() {
     max_mem=$((total_mem * 80 / 100))
     
     while true; do
-        read -p "$1 [$2]: " input
-        input=${input:-$2}
+        read -p "$1 [Máx: ${max_mem}M, ej. 512M, 2G]: " input
+        input=${input:-"${max_mem}M"}  # Valor por defecto es el máximo calculado
         if [[ "$input" =~ ^[0-9]+[MG]$ ]]; then
             if [[ "$input" =~ M$ ]]; then
                 mem_value=${input%M}
@@ -129,7 +129,7 @@ cd ~/minecraft_server
 wget $server_url -O server.jar
 
 # Configura la memoria del servidor con entrada del usuario
-memory=$(prompt_memory "Elige la cantidad de memoria para el servidor (ej. 512M, 2G)" "18G")
+memory=$(prompt_memory "Elige la cantidad de memoria para el servidor (ej. 512M, 2G)" "${max_mem}M")
 
 # Crea y acepta el archivo eula.txt
 echo "eula=true" > eula.txt
@@ -145,8 +145,8 @@ motd=$(prompt_text "Elige el mensaje del día (motd)" "A Minecraft Server")
 
 # Crea el archivo server.properties
 cat > server.properties <<EOL
-#Minecraft server properties
-#$(date)
+# Minecraft server properties
+# $(date)
 enable-jmx-monitoring=false
 rcon.port=25575
 level-seed=$level_seed
