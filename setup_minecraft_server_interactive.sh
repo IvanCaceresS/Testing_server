@@ -91,7 +91,17 @@ sudo firewall-cmd --permanent --zone=public --add-port=25565/udp
 sudo firewall-cmd --reload
 
 # Selección de la versión del servidor
-version=$(prompt "Elige la versión del servidor (1.21, 1.20.6, 1.20.5, 1.20.4, 1.20.3, 1.20.2, 1.20.1, 1.20, OTRA) o ingresa otra URL personalizada" "1.21" "1.21 1.20.6 1.20.5 1.20.4 1.20.3 1.20.2 1.20.1 1.20 OTRA")
+version=$(prompt "Elige la versión del servidor Minecraft:
+    1) 1.21
+    2) 1.20.6
+    3) 1.20.5
+    4) 1.20.4
+    5) 1.20.3
+    6) 1.20.2
+    7) 1.20.1
+    8) 1.20
+    9) OTRA (Ingresa una URL personalizada)" "1.21" "1.21 1.20.6 1.20.5 1.20.4 1.20.3 1.20.2 1.20.1 1.20 OTRA")
+
 case $version in
     1.21)
         server_url="https://launcher.mojang.com/v1/objects/450698d1863ab5180c25d7c804ef0fe6369dd1ba/server.jar"
@@ -121,27 +131,37 @@ case $version in
         server_url=$(prompt_url "Ingresa la URL personalizada del servidor" "https://launcher.mojang.com/v1/objects/84194a2f286ef7c14ed7ce0090dba59902951553/server.jar")
         ;;
 esac
-
-
 # Crea el directorio del servidor y descarga el servidor de Minecraft
-mkdir ~/minecraft_server && \
-cd ~/minecraft_server
+mkdir -p ~/minecraft_server && cd ~/minecraft_server
 wget $server_url -O server.jar
 
 # Configura la memoria del servidor con entrada del usuario
-memory=$(prompt_memory "Elige la cantidad de memoria para el servidor (ej. 512M, 2G)" "${max_mem}M")
+max_mem=$(free -m | awk '/^Mem:/{print $2 * 80 / 100}')
+memory=$(prompt_memory "Selecciona la cantidad de memoria para el servidor de Minecraft. Introduce un valor como 512M o 2G (máximo recomendado: ${max_mem}M)" "${max_mem}M")
 
 # Crea y acepta el archivo eula.txt
 echo "eula=true" > eula.txt
 
-# Configura el servidor con entrada del usuario
-difficulty=$(prompt "Elige la dificultad (peaceful, easy, normal, hard)" "easy" "peaceful easy normal hard")
-gamemode=$(prompt "Elige el modo de juego (survival, creative, adventure, spectator)" "survival" "survival creative adventure spectator")
-level_seed=$(prompt_text "Elige la semilla del mundo" "")
-max_players=$(prompt_number "Elige el número máximo de jugadores" "20")
-pvp=$(prompt "Elige si el PvP está activado (true, false)" "true" "true false")
-online_mode=$(prompt "Elige el modo online (true para solo premium, false para no premium)" "true" "true false")
-motd=$(prompt_text "Elige el mensaje del día (motd)" "A Minecraft Server")
+# Configura la dificultad del servidor con entrada del usuario
+difficulty=$(prompt "Selecciona la dificultad del servidor (peaceful, easy, normal, hard)" "easy" "peaceful easy normal hard")
+
+# Configura el modo de juego con entrada del usuario
+gamemode=$(prompt "Selecciona el modo de juego del servidor (survival, creative, adventure, spectator)" "survival" "survival creative adventure spectator")
+
+# Configura la semilla del mundo con entrada del usuario
+level_seed=$(prompt_text "Ingresa la semilla del mundo (opcional)" "")
+
+# Configura el número máximo de jugadores con entrada del usuario
+max_players=$(prompt_number "Ingresa el número máximo de jugadores permitidos en el servidor" "20")
+
+# Configura si el PvP está activado con entrada del usuario
+pvp=$(prompt "Selecciona si el PvP está activado en el servidor (true, false)" "true" "true false")
+
+# Configura el modo online con entrada del usuario
+online_mode=$(prompt "Selecciona el modo online del servidor (true para solo premium, false para no premium)" "true" "true false")
+
+# Configura el mensaje del día (MOTD) con entrada del usuario
+motd=$(prompt_text "Ingresa el mensaje del día para mostrar en el servidor" "A Minecraft Server")
 
 # Crea el archivo server.properties
 cat > server.properties <<EOL
