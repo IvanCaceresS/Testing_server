@@ -15,25 +15,22 @@ prompt() {
     done
 }
 
-# Función para obtener entrada del usuario con un valor por defecto y validar números
-prompt_number() {
+# Función para obtener entrada del usuario con un valor por defecto y validar números dentro de un rango
+prompt_number_range() {
     local input
+    local min=$2
+    local max=$3
     while true; do
-        read -p "$1 [$2]: " input
+        read -p "$1 [$2-$3]: " input
         input=${input:-$2}
         if [[ "$input" =~ ^[0-9]+$ ]]; then
-            echo "$input"
-            return
-        else
-            echo "Por favor, ingrese un número válido."
+            if (( input >= min && input <= max )); then
+                echo "$input"
+                return
+            fi
         fi
+        echo "Por favor, ingrese un número válido entre $2 y $3."
     done
-}
-
-# Función para obtener entrada del usuario con un valor por defecto
-prompt_text() {
-    read -p "$1 [$2]: " input
-    echo "${input:-$2}"
 }
 
 # Función para obtener la URL del servidor Forge
@@ -80,6 +77,22 @@ prompt_forge_url() {
     done
 }
 
+# Función para obtener la cantidad de memoria RAM del sistema (en MB)
+get_free_memory() {
+    free -m | awk '/^Mem:/{print $2}'
+}
+
+# Función para obtener la memoria máxima permitida (en MB, 80% del total)
+get_max_memory() {
+    local total_mem=$(get_free_memory)
+    echo $((total_mem * 80 / 100))
+}
+
+# Función para obtener la memoria mínima permitida (en MB, 512MB)
+get_min_memory() {
+    echo 512
+}
+
 # Actualiza e instala las dependencias necesarias
 sudo apt-get update && \
 sudo apt-get install -y openjdk-21-jre-headless firewalld screen
@@ -89,24 +102,50 @@ sudo firewall-cmd --permanent --zone=public --add-port=25565/tcp
 sudo firewall-cmd --permanent --zone=public --add-port=25565/udp
 sudo firewall-cmd --reload
 
+# Selección del tipo de servidor
+server_type=$(prompt "Elige el tipo de servidor Minecraft:
+    1) Vanilla
+    2) Forge" "Forge" "Vanilla Forge")
 
-# Crea el directorio del servidor y descarga el instalador de Forge
-mkdir -p ~/minecraft_server && cd ~/minecraft_server
-server_url=$(prompt_forge_url "Elige la versión de Forge para instalar" "1.21 1.20.6 1.20.4 1.20.3 1.20.2 1.20.1 1.20 OTRA")
+# Configura el servidor Forge
+if [ "$server_type" == "Forge" ]; then
+    # Crea el directorio del servidor y descarga el instalador de Forge
+    mkdir -p ~/minecraft_server && cd ~/minecraft_server
+    echo "Versiones disponibles de Forge:"
+    echo "1) 1.21"
+    echo "2) 1.20.6"
+    echo "3) 1.20.4"
+    echo "4) 1.20.3"
+    echo "5) 1.20.2"
+    echo "6) 1.20.1"
+    echo "7) 1.20"
+    echo "8) OTRA (Ingresa una URL personalizada)"
+    server_url=$(prompt_forge_url "Elige la versión de Forge para instalar" "1.21 1.20.6 1.20.4 1.20.3 1.20.2 1.20.1 1.20 OTRA")
 
-# Descarga y ejecuta el instalador de Forge
-wget $server_url -O server-installer.jar
-java -jar server-installer.jar --installServer
-server_jar="forge-$(echo $version | cut -d- -f1).0.0.jar"  # Ajusta el nombre según la versión
+    # Descarga y ejecuta el instalador de Forge
+    wget $server_url -O server-installer.jar
+    java -jar server-installer.jar --installServer
+    server_jar="forge-$(echo $version | cut -d- -f1).0.0.jar"  # Ajusta el nombre según la versión
 
-# Editar el archivo user_jvm_args.txt para configurar la RAM
-sed -i 's/# -Xmx4G/-Xmx'$memory'/' user_jvm_args.txt
+    # Obtener la memoria máxima y mínima permitida
+    max_mem=$(get_max_memory)
+    min_mem=$(get_min_memory)
 
-# Crea y acepta el archivo eula.txt
-echo "eula=true" > eula.txt
+    # Configura la memoria del servidor con entrada del usuario
+    memory=$(prompt_number_range "Selecciona la cantidad de memoria para el servidor de Minecraft. Introduce un valor como 512 (MB) o 2 (GB)" $min_mem $max_mem)
 
-# Ejecuta el script ./run.sh
-bash ./run.sh
+    # Editar el archivo user_jvm_args.txt para configurar la RAM
+    sed -i 's/# -Xmx4G/-Xmx'$memory'M/' user_jvm_args.txt
 
-# Mensaje final
-echo "Servidor de Minecraft Forge configurado y ejecutándose."
+    # Crea y acepta el archivo eula.txt
+    echo "eula=true" > eula.txt
+
+    # Ejecuta el script ./run.sh
+    bash ./run.sh
+
+    # Mensaje final
+    echo "Servidor de Minecraft Forge configurado y ejecutándose."
+else
+    echo "No se seleccionó un tipo de servidor válido. Saliendo..."
+    exit 1
+fi
