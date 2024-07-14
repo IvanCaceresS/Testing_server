@@ -1,0 +1,289 @@
+#!/bin/bash
+
+# Función para obtener entrada del usuario con un valor por defecto y validar opciones
+prompt() {
+    local input
+    while true; do
+        read -p "$1 [$2]: " input
+        input=${input:-$2}
+        if [[ " $3 " == *" $input "* ]]; then
+            echo "$input"
+            return
+        else
+            echo "Opción no válida. Las opciones válidas son: $3"
+        fi
+    done
+}
+
+# Función para obtener entrada del usuario con un valor por defecto y validar números
+prompt_number() {
+    local input
+    while true; do
+        read -p "$1 [$2]: " input
+        input=${input:-$2}
+        if [[ "$input" =~ ^[0-9]+$ ]]; then
+            echo "$input"
+            return
+        else
+            echo "Por favor, ingrese un número válido."
+        fi
+    done
+}
+
+# Función para obtener entrada del usuario con un valor por defecto
+prompt_text() {
+    read -p "$1 [$2]: " input
+    echo "${input:-$2}"
+}
+
+# Función para obtener entrada del usuario con validación de memoria
+prompt_memory() {
+    local input
+    local total_mem
+    local max_mem
+    total_mem=$(free -m | awk '/^Mem:/{print $2}')
+    max_mem=$((total_mem * 80 / 100))
+    
+    while true; do
+        read -p "$1 [Máx: ${max_mem}M, ej. 512M, 2G]: " input
+        input=${input:-"${max_mem}M"}  # Valor por defecto es el máximo calculado
+        if [[ "$input" =~ ^[0-9]+[MG]$ ]]; then
+            if [[ "$input" =~ M$ ]]; then
+                mem_value=${input%M}
+                if [[ "$mem_value" -ge 512 && "$mem_value" -le "$max_mem" ]]; then
+                    echo "$input"
+                    return
+                fi
+            elif [[ "$input" =~ G$ ]]; then
+                mem_value=$((${input%G} * 1024))
+                if [[ "$mem_value" -ge 512 && "$mem_value" -le "$max_mem" ]]; then
+                    echo "$input"
+                    return
+                fi
+            fi
+        fi
+        echo "Por favor, ingrese un valor válido (ej. 512M, 2G). El mínimo es 512M y el máximo es ${max_mem}M."
+    done
+}
+
+# Función para obtener la URL del servidor
+prompt_url() {
+    local input
+    while true; do
+        read -p "$1 [$2]: " input
+        input=${input:-$2}
+        if [[ "$input" =~ ^https://launcher.mojang.com ]] || [[ "$input" =~ ^https://maven.minecraftforge.net ]]; then
+            echo "$input"
+            return
+        else
+            echo "Por favor, ingrese una URL válida que comience con https://launcher.mojang.com o https://maven.minecraftforge.net"
+        fi
+    done
+}
+
+# Actualiza e instala las dependencias necesarias
+sudo apt-get update && \
+sudo apt-get install -y openjdk-21-jre-headless firewalld screen
+
+# Configura el firewall
+sudo firewall-cmd --permanent --zone=public --add-port=25565/tcp
+sudo firewall-cmd --permanent --zone=public --add-port=25565/udp
+sudo firewall-cmd --reload
+
+# Selección del tipo de servidor
+server_type=$(prompt "Elige el tipo de servidor (vanilla, forge)" "vanilla" "vanilla forge")
+
+if [ "$server_type" == "vanilla" ]; then
+    # Selección de la versión del servidor vanilla
+    version=$(prompt "Elige la versión del servidor Minecraft:
+    1) 1.21
+    2) 1.20.6
+    3) 1.20.5
+    4) 1.20.4
+    5) 1.20.3
+    6) 1.20.2
+    7) 1.20.1
+    8) 1.20
+    9) OTRA (Ingresa una URL personalizada)" "1.21" "1.21 1.20.6 1.20.5 1.20.4 1.20.3 1.20.2 1.20.1 1.20 OTRA")
+
+    case $version in
+        1.21)
+            server_url="https://launcher.mojang.com/v1/objects/450698d1863ab5180c25d7c804ef0fe6369dd1ba/server.jar"
+            ;;
+        1.20.6)
+            server_url="https://launcher.mojang.com/v1/objects/145ff0858209bcfc164859ba735d4199aafa1eea/server.jar"
+            ;;
+        1.20.5)
+            server_url="https://launcher.mojang.com/v1/objects/79493072f65e17243fd36a699c9a96b4381feb91/server.jar"
+            ;;
+        1.20.4)
+            server_url="https://launcher.mojang.com/v1/objects/8dd1a28015f51b1803213892b50b7b4fc76e594d/server.jar"
+            ;;
+        1.20.3)
+            server_url="https://launcher.mojang.com/v1/objects/4fb536bfd4a83d61cdbaf684b8d311e66e7d4c49/server.jar"
+            ;;
+        1.20.2)
+            server_url="https://launcher.mojang.com/v1/objects/5b868151bd02b41319f54c8d4061b8cae84e665c/server.jar"
+            ;;
+        1.20.1)
+            server_url="https://launcher.mojang.com/v1/objects/84194a2f286ef7c14ed7ce0090dba59902951553/server.jar"
+            ;;
+        1.20)
+            server_url="https://launcher.mojang.com/v1/objects/15c777e2cfe0556eef19aab534b186c0c6f277e1/server.jar"
+            ;;
+        "OTRA")
+            server_url=$(prompt_url "Ingresa la URL personalizada del servidor" "https://launcher.mojang.com/v1/objects/84194a2f286ef7c14ed7ce0090dba59902951553/server.jar")
+            ;;
+    esac
+else
+    # Selección de la versión del servidor forge
+    version=$(prompt "Elige la versión del servidor Forge:
+    1) 1.21
+    2) 1.20.6
+    3) 1.20.4
+    4) 1.20.3
+    5) 1.20.2
+    6) 1.20.1
+    7) 1.20
+    8) OTRA (Ingresa una URL personalizada)" "1.21" "1.21 1.20.6 1.20.4 1.20.3 1.20.2 1.20.1 1.20 OTRA")
+
+    case $version in
+        1.21)
+            server_url="https://maven.minecraftforge.net/net/minecraftforge/forge/1.21-51.0.24/forge-1.21-51.0.24-installer.jar"
+            ;;
+        1.20.6)
+            server_url="https://maven.minecraftforge.net/net/minecraftforge/forge/1.20.6-50.1.0/forge-1.20.6-50.1.0-installer.jar"
+            ;;
+        1.20.4)
+            server_url="https://maven.minecraftforge.net/net/minecraftforge/forge/1.20.4-49.1.0/forge-1.20.4-49.1.0-installer.jar"
+            ;;
+        1.20.3)
+            server_url="https://maven.minecraftforge.net/net/minecraftforge/forge/1.20.3-49.0.2/forge-1.20.3-49.0.2-installer.jar"
+            ;;
+        1.20.2)
+            server_url="https://maven.minecraftforge.net/net/minecraftforge/forge/1.20.2-48.1.0/forge-1.20.2-48.1.0-installer.jar"
+            ;;
+        1.20.1)
+            server_url="https://maven.minecraftforge.net/net/minecraftforge/forge/1.20.1-47.3.0/forge-1.20.1-47.3.0-installer.jar"
+            ;;
+        1.20)
+            server_url="https://maven.minecraftforge.net/net/minecraftforge/forge/1.20-46.0.14/forge-1.20-46.0.14-installer.jar"
+            ;;
+        "OTRA")
+            server_url=$(prompt_url "Ingresa la URL personalizada del servidor" "https://maven.minecraftforge.net/net/minecraftforge/forge/1.20-46.0.14/forge-1.20-46.0.14-installer.jar")
+            ;;
+    esac
+fi
+
+# Crea el directorio del servidor y descarga el servidor de Minecraft
+mkdir -p ~/minecraft_server && cd ~/minecraft_server
+wget $server_url -O server-installer.jar
+
+if [ "$server_type" == "forge" ]; then
+    # Ejecuta el instalador de Forge para generar los archivos necesarios
+    java -jar server-installer.jar --installServer
+    server_jar="forge-$(echo $version | cut -d- -f1).0.0.jar"  # Ajusta el nombre según la versión
+else
+    # Renombra el archivo jar de vanilla
+    mv server-installer.jar server.jar
+    server_jar="server.jar"
+fi
+
+# Configura la memoria del servidor con entrada del usuario
+max_mem=$(free -m | awk '/^Mem:/{print $2 * 80 / 100}')
+memory=$(prompt_memory "Selecciona la cantidad de memoria para el servidor de Minecraft. Introduce un valor como 512M o 2G (máximo recomendado: ${max_mem}M)" "${max_mem}M")
+
+# Crea y acepta el archivo eula.txt
+echo "eula=true" > eula.txt
+
+# Configura la dificultad del servidor con entrada del usuario
+difficulty=$(prompt "Selecciona la dificultad del servidor (peaceful, easy, normal, hard)" "easy" "peaceful easy normal hard")
+
+# Configura el modo de juego con entrada del usuario
+gamemode=$(prompt "Selecciona el modo de juego del servidor (survival, creative, adventure, spectator)" "survival" "survival creative adventure spectator")
+
+# Configura la semilla del mundo con entrada del usuario
+level_seed=$(prompt_text "Ingresa la semilla del mundo (opcional)" "")
+
+# Configura el número máximo de jugadores con entrada del usuario
+max_players=$(prompt_number "Ingresa el número máximo de jugadores permitidos en el servidor" "20")
+
+# Configura si el PvP está activado con entrada del usuario
+pvp=$(prompt "Selecciona si el PvP está activado en el servidor (true, false)" "true" "true false")
+
+# Configura el modo online con entrada del usuario
+online_mode=$(prompt "Selecciona el modo online del servidor (true para solo premium, false para no premium)" "true" "true false")
+
+# Configura el mensaje del día (MOTD) con entrada del usuario
+motd=$(prompt_text "Ingresa el mensaje del día para mostrar en el servidor" "A Minecraft Server")
+
+# Crea el archivo server.properties
+cat > server.properties <<EOL
+# Minecraft server properties
+# $(date)
+enable-jmx-monitoring=false
+rcon.port=25575
+level-seed=$level_seed
+gamemode=$gamemode
+enable-command-block=false
+enable-query=false
+generator-settings={}
+enforce-secure-profile=true
+level-name=world
+motd=$motd
+query.port=25565
+pvp=$pvp
+generate-structures=true
+max-chained-neighbor-updates=1000000
+difficulty=$difficulty
+network-compression-threshold=256
+max-tick-time=60000
+require-resource-pack=false
+use-native-transport=true
+max-players=$max_players
+online-mode=$online_mode
+enable-status=true
+allow-flight=false
+initial-disabled-packs=
+broadcast-rcon-to-ops=true
+view-distance=10
+server-ip=
+resource-pack-prompt=
+allow-nether=true
+server-port=25565
+enable-rcon=false
+sync-chunk-writes=true
+op-permission-level=4
+prevent-proxy-connections=false
+hide-online-players=false
+resource-pack=
+entity-broadcast-range-percentage=100
+simulation-distance=10
+rcon.password=
+player-idle-timeout=0
+force-gamemode=false
+rate-limit=0
+hardcore=false
+white-list=false
+broadcast-console-to-ops=true
+spawn-npcs=true
+spawn-animals=true
+log-ips=true
+function-permission-level=2
+initial-enabled-packs=vanilla
+level-type=minecraft:normal
+text-filtering-config=
+spawn-monsters=true
+enforce-whitelist=false
+spawn-protection=16
+resource-pack-sha1=
+max-world-size=29999984
+EOL
+
+# Inicia el servidor con screen
+screen -dmS minecraft_server java -Xmx$memory -Xms$memory -jar $server_jar nogui
+
+# Mensaje indicando cómo ver y salir de la consola de screen
+echo "Servidor de Minecraft configurado y ejecutándose en screen."
+echo "Para ver la consola del servidor, usa: screen -r minecraft_server"
+echo "Para salir de la consola pero dejar el servidor ejecutándose, presiona Ctrl + A seguido de D."
