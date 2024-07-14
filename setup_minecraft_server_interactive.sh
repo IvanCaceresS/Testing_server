@@ -83,7 +83,10 @@ prompt_url() {
 
 # Actualiza e instala las dependencias necesarias
 sudo apt-get update && \
-sudo apt-get install -y openjdk-21-jre-headless firewalld screen
+sudo apt-get install -y openjdk-21-jre-headless firewalld screen dbus
+
+# Reinicia el servicio DBus
+sudo systemctl restart dbus
 
 # Configura el firewall
 sudo firewall-cmd --permanent --zone=public --add-port=25565/tcp
@@ -207,6 +210,7 @@ max-world-size=29999984
 EOL
 
 # Inicia el servidor con screen
-screen -dmS minecraft_server java -Xmx$memory -Xms$memory -jar server.jar nogui
+#screen -dmS minecraft_server java -Xmx$memory -Xms$memory -jar server.jar nogui
+java -Xmx$memory -Xms$memory -jar server.jar nogui
 
 echo "Servidor de Minecraft configurado y ejecutándose en screen."
