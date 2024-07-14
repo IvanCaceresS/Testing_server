@@ -83,10 +83,7 @@ prompt_url() {
 
 # Actualiza e instala las dependencias necesarias
 sudo apt-get update && \
-sudo apt-get install -y openjdk-21-jre-headless firewalld screen dbus
-
-# Reinicia el servicio DBus
-sudo systemctl restart dbus
+sudo apt-get install -y openjdk-21-jre-headless firewalld screen
 
 # Configura el firewall
 sudo firewall-cmd --permanent --zone=public --add-port=25565/tcp
