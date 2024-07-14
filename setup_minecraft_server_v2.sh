@@ -132,12 +132,12 @@ if [ "$server_type" == "vanilla" ]; then
             server_url="https://launcher.mojang.com/v1/objects/15c777e2cfe0556eef19aab534b186c0c6f277e1/server.jar"
             ;;
         "OTRA")
-            server_url=$(prompt_url "Ingresa la URL personalizada del servidor" "https://launcher.mojang.com/v1/objects/84194a2f286ef7c14ed7ce0090dba59902951553/server.jar")
+            server_url=$(prompt_url "Ingresa la URL personalizada del servidor, puedes obtenerla de: https://mcversions.net/" "https://launcher.mojang.com/v1/objects/84194a2f286ef7c14ed7ce0090dba59902951553/server.jar")
             ;;
     esac
 else
     # Selección de la versión del servidor forge
-    version=$(prompt "Elige la versión del servidor Forge:
+    version=$(prompt "Elige la versión del servidor de Minecraft con forge:
     1) 1.21
     2) 1.20.6
     3) 1.20.4
@@ -170,120 +170,41 @@ else
             server_url="https://maven.minecraftforge.net/net/minecraftforge/forge/1.20-46.0.14/forge-1.20-46.0.14-installer.jar"
             ;;
         "OTRA")
-            server_url=$(prompt_url "Ingresa la URL personalizada del servidor" "https://maven.minecraftforge.net/net/minecraftforge/forge/1.20-46.0.14/forge-1.20-46.0.14-installer.jar")
+            server_url=$(prompt_url "Ingresa la URL personalizada del servidor, puedes obtenerla de: https://files.minecraftforge.net/net/minecraftforge/forge/" "https://maven.minecraftforge.net/net/minecraftforge/forge/1.20.1-47.3.0/forge-1.20.1-47.3.0-installer.jar")
             ;;
     esac
 fi
 
-# Crea el directorio del servidor y descarga el servidor de Minecraft
-mkdir -p ~/minecraft_server && cd ~/minecraft_server
-wget $server_url -O server-installer.jar
-
-if [ "$server_type" == "forge" ]; then
-    # Ejecuta el instalador de Forge para generar los archivos necesarios
-    java -jar server-installer.jar --installServer
-    server_jar="forge-$(echo $version | cut -d- -f1).0.0.jar"  # Ajusta el nombre según la versión
-else
-    # Renombra el archivo jar de vanilla
-    mv server-installer.jar server.jar
-    server_jar="server.jar"
+# Configuración de EULA
+eula_agree=$(prompt "¿Aceptas el EULA de Minecraft? (yes/no)" "yes" "yes no")
+if [ "$eula_agree" != "yes" ]; then
+    echo "Debes aceptar el EULA para continuar."
+    exit 1
 fi
 
-# Configura la memoria del servidor con entrada del usuario
-max_mem=$(free -m | awk '/^Mem:/{print $2 * 80 / 100}')
-memory=$(prompt_memory "Selecciona la cantidad de memoria para el servidor de Minecraft. Introduce un valor como 512M o 2G (máximo recomendado: ${max_mem}M)" "${max_mem}M")
+# Creación del directorio del servidor
+server_directory=$(prompt_text "Ingresa el nombre del directorio del servidor" "minecraft_server")
+mkdir -p "$server_directory"
+cd "$server_directory"
 
-# Crea y acepta el archivo eula.txt
+# Descarga del servidor
+wget -O server.jar "$server_url"
+
+# Aceptación del EULA
 echo "eula=true" > eula.txt
 
-# Configura la dificultad del servidor con entrada del usuario
-difficulty=$(prompt "Selecciona la dificultad del servidor (peaceful, easy, normal, hard)" "easy" "peaceful easy normal hard")
+# Selección de la cantidad de memoria asignada
+memoria=$(prompt_memory "¿Cuánta memoria RAM quieres asignar al servidor?")
 
-# Configura el modo de juego con entrada del usuario
-gamemode=$(prompt "Selecciona el modo de juego del servidor (survival, creative, adventure, spectator)" "survival" "survival creative adventure spectator")
+# Creación del script de inicio del servidor
+cat <<EOF > start.sh
+#!/bin/bash
+java -Xmx$memoria -Xms$memoria -jar server.jar nogui
+EOF
 
-# Configura la semilla del mundo con entrada del usuario
-level_seed=$(prompt_text "Ingresa la semilla del mundo (opcional)" "")
+chmod +x start.sh
 
-# Configura el número máximo de jugadores con entrada del usuario
-max_players=$(prompt_number "Ingresa el número máximo de jugadores permitidos en el servidor" "20")
+# Ejecución del servidor en una sesión de screen
+screen -dmS mc_server ./start.sh
 
-# Configura si el PvP está activado con entrada del usuario
-pvp=$(prompt "Selecciona si el PvP está activado en el servidor (true, false)" "true" "true false")
-
-# Configura el modo online con entrada del usuario
-online_mode=$(prompt "Selecciona el modo online del servidor (true para solo premium, false para no premium)" "true" "true false")
-
-# Configura el mensaje del día (MOTD) con entrada del usuario
-motd=$(prompt_text "Ingresa el mensaje del día para mostrar en el servidor" "A Minecraft Server")
-
-# Crea el archivo server.properties
-cat > server.properties <<EOL
-# Minecraft server properties
-# $(date)
-enable-jmx-monitoring=false
-rcon.port=25575
-level-seed=$level_seed
-gamemode=$gamemode
-enable-command-block=false
-enable-query=false
-generator-settings={}
-enforce-secure-profile=true
-level-name=world
-motd=$motd
-query.port=25565
-pvp=$pvp
-generate-structures=true
-max-chained-neighbor-updates=1000000
-difficulty=$difficulty
-network-compression-threshold=256
-max-tick-time=60000
-require-resource-pack=false
-use-native-transport=true
-max-players=$max_players
-online-mode=$online_mode
-enable-status=true
-allow-flight=false
-initial-disabled-packs=
-broadcast-rcon-to-ops=true
-view-distance=10
-server-ip=
-resource-pack-prompt=
-allow-nether=true
-server-port=25565
-enable-rcon=false
-sync-chunk-writes=true
-op-permission-level=4
-prevent-proxy-connections=false
-hide-online-players=false
-resource-pack=
-entity-broadcast-range-percentage=100
-simulation-distance=10
-rcon.password=
-player-idle-timeout=0
-force-gamemode=false
-rate-limit=0
-hardcore=false
-white-list=false
-broadcast-console-to-ops=true
-spawn-npcs=true
-spawn-animals=true
-log-ips=true
-function-permission-level=2
-initial-enabled-packs=vanilla
-level-type=minecraft:normal
-text-filtering-config=
-spawn-monsters=true
-enforce-whitelist=false
-spawn-protection=16
-resource-pack-sha1=
-max-world-size=29999984
-EOL
-
-# Inicia el servidor con screen
-screen -dmS minecraft_server java -Xmx$memory -Xms$memory -jar $server_jar nogui
-
-# Mensaje indicando cómo ver y salir de la consola de screen
-echo "Servidor de Minecraft configurado y ejecutándose en screen."
-echo "Para ver la consola del servidor, usa: screen -r minecraft_server"
-echo "Para salir de la consola pero dejar el servidor ejecutándose, presiona Ctrl + A seguido de D."
+echo "El servidor de Minecraft se está iniciando en una sesión de screen llamada 'mc_server'."
