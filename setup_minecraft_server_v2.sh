@@ -139,6 +139,8 @@ server_jar="forge-$(basename "$server_url" | sed 's/-installer.jar/.jar/')"
 # Configura la memoria del servidor con entrada del usuario
 memory=$(prompt_memory "Selecciona la cantidad de memoria para el servidor de Minecraft. Introduce un valor como 512M o 2G")
 
+echo "La memoria seleccionada es: $memory"
+
 # Editar el archivo user_jvm_args.txt para configurar la RAM
 sed -i "s/^#* -Xmx.*/-Xmx${memory}/" user_jvm_args.txt
 
