@@ -39,50 +39,50 @@ prompt_forge_url() {
 
         read -p "Elige la versión de Forge para instalar [Ver opciones de arriba o OTRA]: " input
 
-        if [[ " $valid_options " == *" $input "* ]]; then
-            case $input in
-                1.21)
-                    server_url="https://maven.minecraftforge.net/net/minecraftforge/forge/1.21-51.0.24/forge-1.21-51.0.24-installer.jar"
-                    ;;
-                1.20.6)
-                    server_url="https://maven.minecraftforge.net/net/minecraftforge/forge/1.20.6-50.1.0/forge-1.20.6-50.1.0-installer.jar"
-                    ;;
-                1.20.4)
-                    server_url="https://maven.minecraftforge.net/net/minecraftforge/forge/1.20.4-49.1.0/forge-1.20.4-49.1.0-installer.jar"
-                    ;;
-                1.20.3)
-                    server_url="https://maven.minecraftforge.net/net/minecraftforge/forge/1.20.3-49.0.2/forge-1.20.3-49.0.2-installer.jar"
-                    ;;
-                1.20.2)
-                    server_url="https://maven.minecraftforge.net/net/minecraftforge/forge/1.20.2-48.1.0/forge-1.20.2-48.1.0-installer.jar"
-                    ;;
-                1.20.1)
-                    server_url="https://maven.minecraftforge.net/net/minecraftforge/forge/1.20.1-47.3.0/forge-1.20.1-47.3.0-installer.jar"
-                    ;;
-                1.20)
-                    server_url="https://maven.minecraftforge.net/net/minecraftforge/forge/1.20-46.0.14/forge-1.20-46.0.14-installer.jar"
-                    ;;
-                OTRA)
-                    read -p "Ingresa la URL personalizada del servidor Forge: " server_url
-                    if [[ ! "$server_url" =~ ^https:// ]]; then
-                        echo "Error: La URL debe comenzar con 'https://'."
-                        continue
-                    elif [[ ! "$server_url" =~ ^https://maven.minecraftforge.net ]]; then
-                        echo "Error: La URL no es válida para descargar el instalador."
-                        continue
-                    else
-                        echo "$server_url"
-                        return
-                    fi
-                    ;;
-            esac
+        case $input in
+            1.21)
+                server_url="https://maven.minecraftforge.net/net/minecraftforge/forge/1.21-51.0.24/forge-1.21-51.0.24-installer.jar"
+                ;;
+            1.20.6)
+                server_url="https://maven.minecraftforge.net/net/minecraftforge/forge/1.20.6-50.1.0/forge-1.20.6-50.1.0-installer.jar"
+                ;;
+            1.20.4)
+                server_url="https://maven.minecraftforge.net/net/minecraftforge/forge/1.20.4-49.1.0/forge-1.20.4-49.1.0-installer.jar"
+                ;;
+            1.20.3)
+                server_url="https://maven.minecraftforge.net/net/minecraftforge/forge/1.20.3-49.0.2/forge-1.20.3-49.0.2-installer.jar"
+                ;;
+            1.20.2)
+                server_url="https://maven.minecraftforge.net/net/minecraftforge/forge/1.20.2-48.1.0/forge-1.20.2-48.1.0-installer.jar"
+                ;;
+            1.20.1)
+                server_url="https://maven.minecraftforge.net/net/minecraftforge/forge/1.20.1-47.3.0/forge-1.20.1-47.3.0-installer.jar"
+                ;;
+            1.20)
+                server_url="https://maven.minecraftforge.net/net/minecraftforge/forge/1.20-46.0.14/forge-1.20-46.0.14-installer.jar"
+                ;;
+            OTRA)
+                read -p "Ingresa la URL personalizada del servidor Forge: " server_url
+                if [[ ! "$server_url" =~ ^https:// ]]; then
+                    echo "Error: La URL debe comenzar con 'https://'."
+                    continue
+                elif [[ ! "$server_url" =~ ^https://maven.minecraftforge.net ]]; then
+                    echo "Error: La URL no es válida para descargar el instalador."
+                    continue
+                else
+                    echo "$server_url"
+                    return
+                fi
+                ;;
+            *)
+                echo "Opción no válida. Seleccione una de las opciones listadas o ingrese OTRA para una URL personalizada."
+                continue
+                ;;
+        esac
 
-            if [[ -n "$server_url" ]]; then
-                echo "URL de descarga seleccionada: $server_url"
-                return
-            fi
-        else
-            echo "Opción no válida. Seleccione una de las opciones listadas o ingrese OTRA para una URL personalizada."
+        if [[ -n "$server_url" ]]; then
+            echo "URL de descarga seleccionada: $server_url"
+            return
         fi
     done
 }
@@ -123,7 +123,7 @@ echo "URL de descarga seleccionada: $server_url"
 while true; do
     if [[ "$server_url" =~ ^https:// ]]; then
         wget "$server_url" -O server-installer.jar
-        if [ $? -ne 0 ]; then
+        if [ $? -ne 0 ]; entonces
             echo "Error: No se pudo descargar el instalador desde la URL proporcionada."
             server_url=$(prompt_forge_url)
         else
