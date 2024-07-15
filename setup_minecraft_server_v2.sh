@@ -63,16 +63,17 @@ prompt_forge_url() {
                     read -p "Ingresa la URL personalizada del servidor Forge: " server_url
                     if [[ ! "$server_url" =~ ^https:// ]]; then
                         echo "Error: La URL debe comenzar con 'https://'."
-                        continue
+                    elif [[ ! "$server_url" =~ ^https://maven.minecraftforge.net ]]; then
+                        echo "Error: La URL no es válida para descargar el instalador."
+                    else
+                        echo "$server_url"
+                        return
                     fi
+                    continue
                     ;;
             esac
-            if [[ "$server_url" =~ ^https://maven.minecraftforge.net ]]; then
-                echo "$server_url"
-                return
-            else
-                echo "URL no válida. Debe empezar con https://maven.minecraftforge.net"
-            fi
+            echo "$server_url"
+            return
         else
             echo "Opción no válida. Seleccione una de las opciones listadas o ingrese OTRA para una URL personalizada."
         fi
