@@ -53,28 +53,25 @@ prompt_memory() {
     min_mem=$(get_min_memory)
     max_mem=$(get_max_memory)
 
-    read -p "$1 [Min: ${min_mem}M, Max: ${max_mem}M, ej. 512M, 2G]: " input
-    if [[ "$input" =~ ^[0-9]+[MG]$ ]]; then
-        local unit=${input: -1}
-        local value=${input%$unit}
-        if [[ $unit == "M" && $value -ge $min_mem && $value -le $max_mem ]]; then
-            echo "$input"
-        elif [[ $unit == "G" ]]; then
-            value=$((value * 1024))
-            if [[ $value -ge $min_mem && $value -le $max_mem ]]; then
-                echo "${input}"
-            else
-                echo "Opción no válida: $input"
-                exit 1
+    while true; do
+        read -p "$1 [Min: ${min_mem}M, Max: ${max_mem}M, ej. 512M, 2G]: " input
+        if [[ "$input" =~ ^[0-9]+[MG]$ ]]; then
+            local unit=${input: -1}
+            local value=${input%$unit}
+            if [[ $unit == "M" && $value -ge $min_mem && $value -le $max_mem ]]; then
+                echo "$input"
+                return
+            elif [[ $unit == "G" ]]; then
+                value=$((value * 1024))
+                if [[ $value -ge $min_mem && $value -le $max_mem ]]; then
+                    echo "${input}"
+                    return
+                fi
             fi
-        else
-            echo "Opción no válida: $input"
-            exit 1
         fi
-    else
         echo "Opción no válida: $input"
         exit 1
-    fi
+    done
 }
 
 # Actualiza e instala las dependencias necesarias
