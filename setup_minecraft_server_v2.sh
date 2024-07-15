@@ -3,16 +3,14 @@
 # Función para obtener entrada del usuario con un valor por defecto y validar opciones
 prompt() {
     local input
-    while true; do
-        read -p "$1 [$2]: " input
-        input=${input:-$2}
-        if [[ " $3 " == *" $input "* ]]; then
-            echo "$input"
-            return
-        else
-            echo "Opción no válida. Las opciones válidas son: $3"
-        fi
-    done
+    read -p "$1 [$2]: " input
+    input=${input:-$2}
+    if [[ " $3 " == *" $input "* ]]; then
+        echo "$input"
+    else
+        echo "Opción no válida: $input"
+        exit 1
+    fi
 }
 
 # Función para obtener entrada del usuario con una URL válida
@@ -55,26 +53,28 @@ prompt_memory() {
     min_mem=$(get_min_memory)
     max_mem=$(get_max_memory)
 
-    while true; do
-        read -p "$1 [Min: ${min_mem}M, Max: ${max_mem}M, ej. 512M, 2G]: " input
-        if [[ "$input" =~ ^[0-9]+[MG]$ ]]; then
-            local unit=${input: -1}
-            local value=${input%$unit}
-            if [[ $unit == "M" ]]; then
-                if [[ $value -ge $min_mem && $value -le $max_mem ]]; then
-                    echo "$input"
-                    return
-                fi
-            elif [[ $unit == "G" ]]; then
-                value=$((value * 1024))
-                if [[ $value -ge $min_mem && $value -le $max_mem ]]; then
-                    echo "${input}"
-                    return
-                fi
+    read -p "$1 [Min: ${min_mem}M, Max: ${max_mem}M, ej. 512M, 2G]: " input
+    if [[ "$input" =~ ^[0-9]+[MG]$ ]]; then
+        local unit=${input: -1}
+        local value=${input%$unit}
+        if [[ $unit == "M" && $value -ge $min_mem && $value -le $max_mem ]]; then
+            echo "$input"
+        elif [[ $unit == "G" ]]; then
+            value=$((value * 1024))
+            if [[ $value -ge $min_mem && $value -le $max_mem ]]; then
+                echo "${input}"
+            else
+                echo "Opción no válida: $input"
+                exit 1
             fi
+        else
+            echo "Opción no válida: $input"
+            exit 1
         fi
-        echo "Por favor, ingrese un valor válido (ej. 512M, 2G). El mínimo es 512M y el máximo es ${max_mem}M."
-    done
+    else
+        echo "Opción no válida: $input"
+        exit 1
+    fi
 }
 
 # Actualiza e instala las dependencias necesarias
@@ -96,6 +96,9 @@ version=$(prompt "Elige la versión de Forge para instalar:
     6) 1.20.1
     7) 1.20
     8) OTRA (Ingresa una URL personalizada)" "1.21" "1.21 1.20.6 1.20.4 1.20.3 1.20.2 1.20.1 1.20 OTRA")
+
+# Configura la memoria del servidor con entrada del usuario
+memory=$(prompt_memory "Selecciona la cantidad de memoria para el servidor de Minecraft. Introduce un valor como 512M o 2G")
 
 case $version in
     1.21)
@@ -135,11 +138,6 @@ wget "$server_url" -O server-installer.jar
 # Ejecuta el instalador de Forge
 java -jar server-installer.jar --installServer
 server_jar="forge-$(basename "$server_url" | sed 's/-installer.jar/.jar/')"
-
-# Configura la memoria del servidor con entrada del usuario
-memory=$(prompt_memory "Selecciona la cantidad de memoria para el servidor de Minecraft. Introduce un valor como 512M o 2G")
-
-echo "La memoria seleccionada es: $memory"
 
 # Editar el archivo user_jvm_args.txt para configurar la RAM
 sed -i "s/^#* -Xmx.*/-Xmx${memory}/" user_jvm_args.txt
