@@ -4,7 +4,7 @@
 install_dependencies() {
     sudo apt update
     sudo apt upgrade -y
-    sudo apt install -y wget screen
+    sudo apt install -y wget screen unzip curl
 }
 
 # Función para instalar la versión correcta de Java
@@ -148,51 +148,43 @@ max-world-size=29999984
 EOL
 }
 
-# Función para descargar plugins
+# Función para descargar plugins desde WeTransfer
 download_plugins() {
     local plugins_dir=$1
+    local url
+    local output_file="plugins.zip"
+    
     mkdir -p "$plugins_dir"
     chmod 775 "$plugins_dir"
     
-    declare -A plugins
-    plugins=(
-        ["GUI_Admin_Tools"]="https://www.spigotmc.org/resources/1-16-1-20-4-%E2%9B%8F%EF%B8%8F-gui-admin-tools-free-%E2%9B%8F%EF%B8%8F.108689/download?version=540552"
-        ["Aurelium_Skills"]="https://www.spigotmc.org/resources/auraskills-formerly-aurelium-skills.81069/download?version=547656"
-        ["FartherViewDistance"]="https://www.spigotmc.org/resources/fartherviewdistance-archive.84950/download?version=493052"
-        ["StackMob"]="https://www.spigotmc.org/resources/stackmob-enhance-your-servers-performance.29999/download?version=549309"
-        ["AngelChest"]="https://www.spigotmc.org/resources/angelchest-free.60383/download?version=548417"
-        ["Chunky"]="https://www.spigotmc.org/resources/chunky.81534/download?version=540132"
-        ["Sleep_most"]="https://www.spigotmc.org/resources/sleep-most-1-8-1-21-x-the-most-advanced-sleep-plugin-available-percentage-animations.60623/download?version=549260"
-        ["BlockLocker"]="https://www.spigotmc.org/resources/blocklocker.3268/download?version=539045"
-        ["Shopkeepers"]="https://www.spigotmc.org/resources/shopkeepers.80756/download?version=547579"
-        ["Action_Bar_Health"]="https://www.spigotmc.org/resources/action-bar-health.2661/download?version=502161"
-        ["AutoUpdatePlugins"]="https://www.spigotmc.org/resources/autoupdateplugins.109683/download?version=549400"
-        ["Extractable_Enchantments"]="https://www.spigotmc.org/resources/extractable-enchantments-remove-enchantments-1-14-1-21.73954/download?version=549724"
-        ["DirectionHUD"]="https://www.spigotmc.org/resources/directionhud.111247/download?version=543904"
-        ["ExcellentEnchants"]="https://www.spigotmc.org/resources/excellentenchants-%E2%AD%90-75-vanilla-like-enchantments.61693/download?version=548290"
-        ["ChestSort"]="https://www.spigotmc.org/resources/chestsort-api.59773/download?version=544875"
-        ["LevelledMobs"]="https://github.com/ArcanePlugins/LevelledMobs/releases/download/4.0.6/LevelledMobs-4.0.6.b35.jar"
-        ["Dynmap"]="https://cdn.modrinth.com/data/fRQREgAc/versions/QtTWJjW6/Dynmap-3.7-beta-6-spigot.jar"
-        ["Fancy_Physics"]="https://www.spigotmc.org/resources/fancy-physics-%E2%9C%A8-1-19-4-1-20-6.110500/download?version=542723"
-    )
+    read -p "Ingrese el enlace de WeTransfer para los plugins: " url
 
-    read -p "¿Desea instalar todos los plugins? (s/n): " yn
-    case $yn in
-        [Ss]* )
-            for plugin in "${!plugins[@]}"; do
-                wget -O "$plugins_dir/${plugin}.jar" "${plugins[$plugin]}"
-                echo "$plugin instalado."
-            done
-            ;;
-        [Nn]* )
-            echo "No se instalarán plugins."
-            ;;
-        * )
-            echo "Respuesta no válida. No se instalarán plugins."
-            ;;
-    esac
+    if [ -z "$url" ]; then
+        echo "No se proporcionó un enlace de WeTransfer. No se instalarán plugins."
+        return
+    fi
+
+    curl "$url" --location --output "${plugins_dir}/${output_file}"
+    
+    if [ $? -ne 0 ]; then
+        echo "Error al descargar el archivo desde WeTransfer. Verifique el enlace y vuelva a intentarlo."
+        return
+    fi
+
+    unzip "${plugins_dir}/${output_file}" -d "${plugins_dir}"
+    
+    if [ $? -ne 0 ]; then
+        echo "Error al descomprimir el archivo. Asegúrese de que el archivo esté en formato ZIP y vuelva a intentarlo."
+        return
+    fi
+
+    # Mover los archivos .jar desde la carpeta Plugins al directorio plugins
+    mv "${plugins_dir}/Plugins/"*.jar "$plugins_dir/"
+    rm -rf "${plugins_dir}/Plugins"
+    rm "${plugins_dir}/${output_file}"
+
+    echo "Plugins importados correctamente desde WeTransfer."
 }
-
 
 # Función para descargar e instalar la versión seleccionada
 install_papermc() {
@@ -216,7 +208,7 @@ install_papermc() {
     # Configurar server.properties
     configure_server_properties "$server_dir/server.properties"
 
-    # Crear carpeta plugins y descargar plugins
+    # Crear carpeta plugins y descargar plugins desde WeTransfer
     download_plugins "$server_dir/plugins"
 
     # Solicitar la cantidad de RAM
