@@ -23,17 +23,11 @@ prompt_number_range() {
     while true; do
         read -p "$1 [$2-$3]: " input
         input=${input:-$2}
-        if [[ "$input" =~ ^([0-9]+)([MG])?$ ]]; then
-            local num=${BASH_REMATCH[1]}
-            local unit=${BASH_REMATCH[2]}
-            if [[ -z "$unit" || "$unit" == "M" || "$unit" == "G" ]]; then
-                if (( num >= min && num <= max )); then
-                    echo "${num}${unit}"
-                    return
-                fi
-            fi
+        if [[ "$input" =~ ^[0-9]+[MG]$ ]]; then
+            echo "$input"
+            return
         fi
-        echo "Por favor, ingrese un valor válido como 512M o 2G entre $2 y $3."
+        echo "Por favor, ingrese un número válido con la unidad M o G (ejemplo: 512M, 2G)."
     done
 }
 
@@ -132,8 +126,7 @@ min_mem=$(get_min_memory)
 memory=$(prompt_number_range "Selecciona la cantidad de memoria para el servidor de Minecraft. Introduce un valor como 512M o 2G" $min_mem $max_mem)
 
 # Editar el archivo user_jvm_args.txt para configurar la RAM
-echo "Valor de memory antes de sed: $memory"
-sed -i "s/# -Xmx4G/-Xmx$memory/" user_jvm_args.txt
+sed -i "s/# -Xmx4G/-Xmx${memory}/" user_jvm_args.txt
 
 # Crea y acepta el archivo eula.txt
 echo "eula=true" > eula.txt
