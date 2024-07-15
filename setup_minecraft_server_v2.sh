@@ -16,16 +16,14 @@ prompt() {
 # Función para obtener entrada del usuario con una URL válida
 prompt_url() {
     local input
-    while true; do
-        read -p "$1 [$2]: " input
-        input=${input:-$2}
-        if [[ "$input" =~ ^https:// ]]; then
-            echo "$input"
-            return
-        else
-            echo "Por favor, ingrese una URL válida que comience con https://"
-        fi
-    done
+    read -p "$1 [$2]: " input
+    input=${input:-$2}
+    if [[ "$input" =~ ^https://maven\.minecraftforge\.net/net/minecraftforge/forge ]]; then
+        echo "$input"
+    else
+        echo "Por favor, ingrese una URL válida que comience con https://maven.minecraftforge.net/net/minecraftforge/forge"
+        exit 1
+    fi
 }
 
 # Función para obtener la cantidad de memoria RAM del sistema (en MB)
@@ -141,7 +139,7 @@ case $version in
         server_url="https://maven.minecraftforge.net/net/minecraftforge/forge/1.20-46.0.14/forge-1.20-46.0.14-installer.jar"
         ;;
     OTRA)
-        server_url=$(prompt_url "Ingresa la URL personalizada del servidor Forge" "https://maven.minecraftforge.net")
+        server_url=$(prompt_url "Ingresa la URL personalizada del servidor Forge" "https://maven.minecraftforge.net/net/minecraftforge/forge")
         ;;
     *)
         echo "Opción no válida. Seleccione una de las opciones listadas o ingrese OTRA para una URL personalizada."
