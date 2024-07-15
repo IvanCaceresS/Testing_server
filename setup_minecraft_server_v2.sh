@@ -18,10 +18,10 @@ prompt_url() {
     local input
     read -p "$1 [$2]: " input
     input=${input:-$2}
-    if [[ "$input" =~ ^https://maven\.minecraftforge\.net/net/minecraftforge/forge ]]; then
+    if [[ "$input" =~ ^https:// ]]; then
         echo "$input"
     else
-        echo "Por favor, ingrese una URL válida que comience con https://maven.minecraftforge.net/net/minecraftforge/forge"
+        echo "Por favor, ingrese una URL válida que comience con https://"
         exit 1
     fi
 }
@@ -119,7 +119,7 @@ check_memory() {
 
 # Actualiza e instala las dependencias necesarias
 sudo apt-get update && \
-sudo apt-get install -y openjdk-21-jre-headless firewalld screen
+sudo apt-get install -y openjdk-21-jre-headless firewalld screen unzip
 
 # Configura el firewall
 sudo firewall-cmd --permanent --zone=public --add-port=25565/tcp
@@ -135,7 +135,8 @@ version=$(prompt "Elige la versión de Forge para instalar:
     5) 1.20.2
     6) 1.20.1
     7) 1.20
-    8) OTRA (Ingresa una URL personalizada)" "1.21" "1.21 1.20.6 1.20.4 1.20.3 1.20.2 1.20.1 1.20 OTRA")
+    8) OTRA (Ingresa una URL personalizada)
+    9) Serverpack (Ingresa una URL para descargar un paquete de servidor)" "1.21" "1.21 1.20.6 1.20.4 1.20.3 1.20.2 1.20.1 1.20 OTRA Serverpack")
 
 case $version in
     1.21)
@@ -158,6 +159,22 @@ case $version in
         ;;
     1.20)
         server_url="https://maven.minecraftforge.net/net/minecraftforge/forge/1.20-46.0.14/forge-1.20-46.0.14-installer.jar"
+        ;;
+    Serverpack)
+        serverpack_url=$(prompt_url "Ingresa la URL del paquete de servidor" "https://")
+        mkdir -p ~/minecraft_server && cd ~/minecraft_server
+        wget "$serverpack_url" -O serverpack.zip
+        unzip serverpack.zip
+        rm serverpack.zip
+
+        # Ejecuta el script start.sh si existe
+        if [ -f start.sh ]; then
+            bash start.sh
+        else
+            echo "No se encontró el archivo start.sh en el paquete del servidor."
+            exit 1
+        fi
+        exit 0
         ;;
     OTRA)
         server_url=$(prompt_url "Ingresa la URL personalizada del servidor Forge" "https://maven.minecraftforge.net/net/minecraftforge/forge")
