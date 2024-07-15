@@ -113,7 +113,6 @@ sudo firewall-cmd --reload
 
 # Crea el directorio del servidor y descarga el instalador de Forge
 mkdir -p ~/minecraft_server && cd ~/minecraft_server
-echo "Versiones disponibles de Forge:"
 server_url=$(prompt_forge_url)
 
 # Descarga y ejecuta el instalador de Forge
