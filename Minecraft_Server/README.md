@@ -21,6 +21,17 @@
     ./setup_minecraft_server_FORGE.sh
 ```
 
+# Para Servidor PaperMC con plugins
+
+```bash 
+    cd ~
+    sudo rm -r *
+    git clone https://github.com/IvanCaceresS/Testing_server
+    cd Testing_server/Minecraft_Server
+    chmod +x setup_minecraft_server_PLUGINS.sh
+    ./setup_minecraft_server_PLUGINS.sh
+```
+
 ### Notas:
 - **Para desconectarte de la sesión de `screen` sin detener el servidor:** Presiona `Ctrl + A + D`.
 - **Para volver a la sesión de `screen`:** 

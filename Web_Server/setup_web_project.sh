@@ -1,7 +1,13 @@
 #!/bin/bash
 
+# Verifica si el script se ejecuta con permisos de sudo
+if [ "$EUID" -ne 0 ]; then
+  echo "Por favor, ejecute este script como root o usando sudo"
+  exit 1
+fi
+
 echo "Actualizando la lista de paquetes..."
-sudo apt-get update
+sudo apt-get update -y
 
 echo "Instalando firewalld..."
 sudo apt-get install -y firewalld
