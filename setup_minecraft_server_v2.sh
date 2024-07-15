@@ -133,6 +133,19 @@ download_mods_from_wetransfer() {
     rm -r "${output_dir}/mods"
 }
 
+# Función para mover mods no válidos a otra carpeta
+filter_invalid_mods() {
+    local mods_dir="$1"
+    local invalid_mods_dir="$2"
+    mkdir -p "$invalid_mods_dir"
+    for mod in "$mods_dir"/*.jar; do
+        if unzip -l "$mod" | grep -q "net/minecraft/client"; then
+            mv "$mod" "$invalid_mods_dir"
+            echo "Mod cliente encontrado y movido: $mod"
+        fi
+    done
+}
+
 # Actualiza e instala las dependencias necesarias
 sudo apt-get update && \
 sudo apt-get install -y openjdk-21-jre-headless firewalld screen unzip curl
@@ -234,6 +247,7 @@ import_mods=$(prompt "¿Desea importar mods desde una URL de WeTransfer? (yes/no
 if [[ "$import_mods" == "yes" ]]; then
     mods_url=$(prompt_url "Ingrese la URL de WeTransfer que contiene los mods" "https://")
     download_mods_from_wetransfer "$mods_url" ~/minecraft_server/mods mods.zip
+    filter_invalid_mods ~/minecraft_server/mods ~/minecraft_server/invalid_mods
 fi
 
 # Eliminar la carpeta world si ya existe
