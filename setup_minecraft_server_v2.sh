@@ -96,14 +96,6 @@ check_memory() {
     exit 1
 }
 
-# Actualiza e instala las dependencias necesarias
-sudo apt-get update && \
-sudo apt-get install -y openjdk-21-jre-headless firewalld screen
-
-# Configura el firewall
-sudo firewall-cmd --permanent --zone=public --add-port=25565/tcp
-sudo firewall-cmd --permanent --zone=public --add-port=25565/udp
-sudo firewall-cmd --reload
 
 # Selección de la versión del servidor Forge
 version=$(prompt "Elige la versión de Forge para instalar:
@@ -152,6 +144,15 @@ memory=$(prompt_memory "Selecciona la cantidad de memoria para el servidor de Mi
 
 # Segunda comprobación del valor de la memoria
 check_memory "$memory"
+
+# Actualiza e instala las dependencias necesarias
+sudo apt-get update && \
+sudo apt-get install -y openjdk-21-jre-headless firewalld screen
+
+# Configura el firewall
+sudo firewall-cmd --permanent --zone=public --add-port=25565/tcp
+sudo firewall-cmd --permanent --zone=public --add-port=25565/udp
+sudo firewall-cmd --reload
 
 # Crea el directorio del servidor y descarga el instalador de Forge
 mkdir -p ~/minecraft_server && cd ~/minecraft_server
