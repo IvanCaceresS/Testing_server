@@ -61,6 +61,10 @@ prompt_forge_url() {
                     ;;
                 OTRA)
                     read -p "Ingresa la URL personalizada del servidor Forge: " server_url
+                    if [[ ! "$server_url" =~ ^https:// ]]; then
+                        echo "Error: La URL debe comenzar con 'https://'."
+                        continue
+                    fi
                     ;;
             esac
             if [[ "$server_url" =~ ^https://maven.minecraftforge.net ]]; then
@@ -114,7 +118,17 @@ echo "8) OTRA (Ingresa una URL personalizada)"
 server_url=$(prompt_forge_url "Elige la versión de Forge para instalar" "1.21 1.20.6 1.20.4 1.20.3 1.20.2 1.20.1 1.20 OTRA")
 
 # Descarga y ejecuta el instalador de Forge
-wget "$server_url" -O server-installer.jar
+if [[ "$server_url" =~ ^https:// ]]; then
+    wget "$server_url" -O server-installer.jar
+    if [ $? -ne 0 ]; then
+        echo "Error: No se pudo descargar el instalador desde la URL proporcionada."
+        exit 1
+    fi
+else
+    echo "Error: URL no válida para descargar el instalador."
+    exit 1
+fi
+
 java -jar server-installer.jar --installServer
 server_jar="forge-$(basename "$server_url" | cut -d- -f2-4)-installer.jar"
 
