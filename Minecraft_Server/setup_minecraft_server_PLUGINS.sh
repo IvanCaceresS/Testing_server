@@ -156,31 +156,31 @@ download_plugins() {
     
     declare -A plugins
     plugins=(
-        ["GUI Admin Tools"]="https://www.spigotmc.org/resources/1-16-1-20-4-%E2%9B%8F%EF%B8%8F-gui-admin-tools-free-%E2%9B%8F%EF%B8%8F.108689/download?version=540552"
-        ["Aurelium Skills"]="https://www.spigotmc.org/resources/auraskills-formerly-aurelium-skills.81069/download?version=547656"
+        ["GUI_Admin_Tools"]="https://www.spigotmc.org/resources/1-16-1-20-4-%E2%9B%8F%EF%B8%8F-gui-admin-tools-free-%E2%9B%8F%EF%B8%8F.108689/download?version=540552"
+        ["Aurelium_Skills"]="https://www.spigotmc.org/resources/auraskills-formerly-aurelium-skills.81069/download?version=547656"
         ["FartherViewDistance"]="https://www.spigotmc.org/resources/fartherviewdistance-archive.84950/download?version=493052"
         ["StackMob"]="https://www.spigotmc.org/resources/stackmob-enhance-your-servers-performance.29999/download?version=549309"
         ["AngelChest"]="https://www.spigotmc.org/resources/angelchest-free.60383/download?version=548417"
         ["Chunky"]="https://www.spigotmc.org/resources/chunky.81534/download?version=540132"
-        ["Sleep most"]="https://www.spigotmc.org/resources/sleep-most-1-8-1-21-x-the-most-advanced-sleep-plugin-available-percentage-animations.60623/download?version=549260"
+        ["Sleep_most"]="https://www.spigotmc.org/resources/sleep-most-1-8-1-21-x-the-most-advanced-sleep-plugin-available-percentage-animations.60623/download?version=549260"
         ["BlockLocker"]="https://www.spigotmc.org/resources/blocklocker.3268/download?version=539045"
         ["Shopkeepers"]="https://www.spigotmc.org/resources/shopkeepers.80756/download?version=547579"
-        ["Action Bar Health"]="https://www.spigotmc.org/resources/action-bar-health.2661/download?version=502161"
+        ["Action_Bar_Health"]="https://www.spigotmc.org/resources/action-bar-health.2661/download?version=502161"
         ["AutoUpdatePlugins"]="https://www.spigotmc.org/resources/autoupdateplugins.109683/download?version=549400"
-        ["Extractable Enchantments"]="https://www.spigotmc.org/resources/extractable-enchantments-remove-enchantments-1-14-1-21.73954/download?version=549724"
+        ["Extractable_Enchantments"]="https://www.spigotmc.org/resources/extractable-enchantments-remove-enchantments-1-14-1-21.73954/download?version=549724"
         ["DirectionHUD"]="https://www.spigotmc.org/resources/directionhud.111247/download?version=543904"
         ["ExcellentEnchants"]="https://www.spigotmc.org/resources/excellentenchants-%E2%AD%90-75-vanilla-like-enchantments.61693/download?version=548290"
         ["ChestSort"]="https://www.spigotmc.org/resources/chestsort-api.59773/download?version=544875"
         ["LevelledMobs"]="https://github.com/ArcanePlugins/LevelledMobs/releases/download/4.0.6/LevelledMobs-4.0.6.b35.jar"
         ["Dynmap"]="https://cdn.modrinth.com/data/fRQREgAc/versions/QtTWJjW6/Dynmap-3.7-beta-6-spigot.jar"
-        ["Fancy Physics"]="https://www.spigotmc.org/resources/fancy-physics-%E2%9C%A8-1-19-4-1-20-6.110500/download?version=542723"
+        ["Fancy_Physics"]="https://www.spigotmc.org/resources/fancy-physics-%E2%9C%A8-1-19-4-1-20-6.110500/download?version=542723"
     )
 
     read -p "¿Desea instalar todos los plugins? (s/n): " yn
     case $yn in
-        [Yy]* )
+        [Ss]* )
             for plugin in "${!plugins[@]}"; do
-                wget -O "$plugins_dir/$(echo $plugin | tr ' ' '_').jar" "${plugins[$plugin]}"
+                wget -O "$plugins_dir/${plugin}.jar" "${plugins[$plugin]}"
                 echo "$plugin instalado."
             done
             ;;
