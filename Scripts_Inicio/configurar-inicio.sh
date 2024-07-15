@@ -15,7 +15,17 @@ fi
 # Crear el script de inicio
 sudo bash -c "cat <<EOL > /usr/local/bin/startup-script.sh
 #!/bin/bash
-$expanded_path
+
+LOGFILE="/var/log/startup-script.log"
+echo "Script de inicio ejecutado el \$(date)" >> \$LOGFILE
+cd $(dirname $expanded_path)
+echo "Directorio cambiado a $(dirname $expanded_path)" >> \$LOGFILE
+/usr/bin/screen -dmS papermc_server /usr/bin/java -Xms16G -Xmx16G -jar $(basename $expanded_path) --nogui
+if [ \$? -eq 0 ]; then
+  echo "Servidor Minecraft iniciado correctamente" >> \$LOGFILE
+else
+  echo "Error al iniciar el servidor Minecraft" >> \$LOGFILE
+fi
 EOL"
 
 # Verificar si el script se ha creado correctamente

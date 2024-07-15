@@ -10,4 +10,4 @@
     sudo ./configurar-inicio.sh
 ```
 
-Ejemplo de ruta para poner ~/papermc/1.20/start.sh
+Ejemplo de ruta para poner /home/ubuntu/papermc/1.20/start.sh
