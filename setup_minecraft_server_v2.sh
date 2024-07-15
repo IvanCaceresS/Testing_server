@@ -30,6 +30,50 @@ prompt_url() {
     done
 }
 
+# Función para obtener la cantidad de memoria RAM del sistema (en MB)
+get_free_memory() {
+    free -m | awk '/^Mem:/{print $2}'
+}
+
+# Función para obtener la memoria máxima permitida (en MB, 80% del total)
+get_max_memory() {
+    local total_mem=$(get_free_memory)
+    echo $((total_mem * 80 / 100))
+}
+
+# Función para obtener la memoria mínima permitida (en MB, 512MB)
+get_min_memory() {
+    echo 512
+}
+
+# Función para solicitar la cantidad de memoria con validación
+prompt_memory() {
+    local input
+    local min_mem=$(get_min_memory)
+    local max_mem=$(get_max_memory)
+
+    while true; do
+        read -p "$1 [Min: ${min_mem}M, Max: ${max_mem}M, ej. 512M, 2G]: " input
+        if [[ "$input" =~ ^[0-9]+[MG]$ ]]; then
+            local unit=${input: -1}
+            local value=${input%$unit}
+            if [[ $unit == "M" ]]; then
+                if [[ $value -ge $min_mem && $value -le $max_mem ]]; then
+                    echo "$input"
+                    return
+                fi
+            elif [[ $unit == "G" ]]; then
+                value=$((value * 1024))
+                if [[ $value -ge $min_mem && $value -le $max_mem ]]; then
+                    echo "${input}"
+                    return
+                fi
+            fi
+        fi
+        echo "Por favor, ingrese un valor válido (ej. 512M, 2G). El mínimo es 512M y el máximo es ${max_mem}M."
+    done
+}
+
 # Actualiza e instala las dependencias necesarias
 sudo apt-get update && \
 sudo apt-get install -y openjdk-21-jre-headless firewalld screen
@@ -85,20 +129,8 @@ wget "$server_url" -O server-installer.jar
 java -jar server-installer.jar --installServer
 server_jar="forge-$(basename "$server_url" | sed 's/-installer.jar/.jar/')"
 
-# Función para obtener la cantidad de memoria RAM del sistema (en MB)
-get_free_memory() {
-    free -m | awk '/^Mem:/{print $2}'
-}
-
-# Función para obtener la memoria máxima permitida (en MB, 80% del total)
-get_max_memory() {
-    local total_mem=$(get_free_memory)
-    echo $((total_mem * 80 / 100))
-}
-
 # Configura la memoria del servidor con entrada del usuario
-max_mem=$(get_max_memory)
-memory=$(prompt "Selecciona la cantidad de memoria para el servidor de Minecraft. Introduce un valor como 512M o 2G" "2G" "512M 1G 1.5G 2G 3G 4G 6G 8G")
+memory=$(prompt_memory "Selecciona la cantidad de memoria para el servidor de Minecraft. Introduce un valor como 512M o 2G")
 
 # Editar el archivo user_jvm_args.txt para configurar la RAM
 sed -i "s/^#* -Xmx.*/-Xmx${memory}/" user_jvm_args.txt
