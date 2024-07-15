@@ -94,9 +94,6 @@ version=$(prompt "Elige la versión de Forge para instalar:
     7) 1.20
     8) OTRA (Ingresa una URL personalizada)" "1.21" "1.21 1.20.6 1.20.4 1.20.3 1.20.2 1.20.1 1.20 OTRA")
 
-# Configura la memoria del servidor con entrada del usuario
-memory=$(prompt_memory "Selecciona la cantidad de memoria para el servidor de Minecraft. Introduce un valor como 512M o 2G")
-
 case $version in
     1.21)
         server_url="https://maven.minecraftforge.net/net/minecraftforge/forge/1.21-51.0.24/forge-1.21-51.0.24-installer.jar"
@@ -127,6 +124,9 @@ case $version in
         exit 1
         ;;
 esac
+
+# Configura la memoria del servidor con entrada del usuario
+memory=$(prompt_memory "Selecciona la cantidad de memoria para el servidor de Minecraft. Introduce un valor como 512M o 2G")
 
 # Crea el directorio del servidor y descarga el instalador de Forge
 mkdir -p ~/minecraft_server && cd ~/minecraft_server
