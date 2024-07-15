@@ -115,6 +115,9 @@ sudo firewall-cmd --reload
 mkdir -p ~/minecraft_server && cd ~/minecraft_server
 server_url=$(prompt_forge_url)
 
+# Verificar la URL
+echo "URL de descarga seleccionada: $server_url"
+
 # Descarga y ejecuta el instalador de Forge
 while true; do
     if [[ "$server_url" =~ ^https:// ]]; then
