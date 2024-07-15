@@ -161,11 +161,13 @@ chmod +x setup_web_project.sh
 
 - **Se puede usar el script bash que automatiza todo este proceso:** 
     ```bash 
-    # Guarda el archivo y dale permisos de ejecución:
-    chmod +x setup_minecraft_server_interactive.sh
-
-    # Ejecuta el script:
-    ./setup_minecraft_server_interactive.sh
+    #PARA UNO CON FORGE
+    cd ~
+    sudo rm -r *
+    git clone https://github.com/IvanCaceresS/Testing_server
+    cd Testing_server/
+    chmod +x setup_minecraft_server_v2.sh
+    ./setup_minecraft_server_v2.sh
     ```
 
 
