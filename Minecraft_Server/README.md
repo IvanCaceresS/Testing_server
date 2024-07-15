@@ -5,7 +5,7 @@
     cd ~
     sudo rm -r *
     git clone https://github.com/IvanCaceresS/Testing_server
-    cd Testing_server/Minecraft_Server
+    cd ~/Testing_server/Minecraft_Server
     chmod +x setup_minecraft_server_VANILLA.sh
     ./setup_minecraft_server_VANILLA.sh
 ```
@@ -16,7 +16,7 @@
     cd ~
     sudo rm -r *
     git clone https://github.com/IvanCaceresS/Testing_server
-    cd Testing_server/Minecraft_Server
+    cd ~/Testing_server/Minecraft_Server
     chmod +x setup_minecraft_server_FORGE.sh
     ./setup_minecraft_server_FORGE.sh
 ```
@@ -27,7 +27,7 @@
     cd ~
     sudo rm -r *
     git clone https://github.com/IvanCaceresS/Testing_server
-    cd Testing_server/Minecraft_Server
+    cd ~/Testing_server/Minecraft_Server
     chmod +x setup_minecraft_server_PLUGINS.sh
     ./setup_minecraft_server_PLUGINS.sh
 ```

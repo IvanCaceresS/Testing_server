@@ -3,16 +3,19 @@
 # Solicitar la ruta del script que se desea ejecutar al inicio
 read -p "Introduce la ruta completa del script que deseas ejecutar al inicio: " script_path
 
+# Expandir la tilde en la ruta, si es necesario
+expanded_path=$(eval echo $script_path)
+
 # Verificar si el archivo existe
-if [ ! -f "$script_path" ]; then
-  echo "El archivo $script_path no existe."
+if [ ! -f "$expanded_path" ]; then
+  echo "El archivo $expanded_path no existe."
   exit 1
 fi
 
 # Crear el script de inicio
 sudo bash -c "cat <<EOL > /usr/local/bin/startup-script.sh
 #!/bin/bash
-$script_path
+$expanded_path
 EOL"
 
 # Verificar si el script se ha creado correctamente
