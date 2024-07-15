@@ -53,22 +53,48 @@ prompt_memory() {
     min_mem=$(get_min_memory)
     max_mem=$(get_max_memory)
 
-    read -p "$1 [Min: ${min_mem}M, Max: ${max_mem}M, ej. 512M, 2G]: " input
+    while true; do
+        read -p "$1 [Min: ${min_mem}M, Max: ${max_mem}M, ej. 512M, 2G]: " input
+        if [[ "$input" =~ ^[0-9]+[MG]$ ]]; then
+            local unit=${input: -1}
+            local value=${input%$unit}
+            if [[ $unit == "M" && $value -ge $min_mem && $value -le $max_mem ]]; then
+                echo "$input"
+                return
+            elif [[ $unit == "G" ]]; then
+                value=$((value * 1024))
+                if [[ $value -ge $min_mem && $value -le $max_mem ]]; then
+                    echo "${input}"
+                    return
+                fi
+            fi
+        fi
+        echo "Opción no válida: $input"
+        exit 1
+    done
+}
+
+# Segunda comprobación del valor de la memoria
+check_memory() {
+    local input=$1
+    local min_mem
+    local max_mem
+    min_mem=$(get_min_memory)
+    max_mem=$(get_max_memory)
+
     if [[ "$input" =~ ^[0-9]+[MG]$ ]]; then
         local unit=${input: -1}
         local value=${input%$unit}
         if [[ $unit == "M" && $value -ge $min_mem && $value -le $max_mem ]]; then
-            echo "$input"
-            return
+            return 0
         elif [[ $unit == "G" ]]; then
             value=$((value * 1024))
             if [[ $value -ge $min_mem && $value -le $max_mem ]]; then
-                echo "${input}"
-                return
+                return 0
             fi
         fi
     fi
-    echo "Opción no válida: $input"
+    echo "Opción no válida: $input. La memoria debe estar entre ${min_mem}M y ${max_mem}M."
     exit 1
 }
 
@@ -125,6 +151,9 @@ esac
 
 # Configura la memoria del servidor con entrada del usuario
 memory=$(prompt_memory "Selecciona la cantidad de memoria para el servidor de Minecraft. Introduce un valor como 512M o 2G")
+
+# Segunda comprobación del valor de la memoria
+check_memory "$memory"
 
 # Crea el directorio del servidor y descarga el instalador de Forge
 mkdir -p ~/minecraft_server && cd ~/minecraft_server
