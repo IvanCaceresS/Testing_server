@@ -23,12 +23,12 @@ prompt_number_range() {
     while true; do
         read -p "$1 [$2-$3]: " input
         input=${input:-$2}
-        if [[ "$input" =~ ^([0-9]+)([MG])$ ]]; then
+        if [[ "$input" =~ ^([0-9]+)([MG])?$ ]]; then
             local num=${BASH_REMATCH[1]}
             local unit=${BASH_REMATCH[2]}
-            if [[ "$unit" == "M" || "$unit" == "G" ]]; then
+            if [[ -z "$unit" || "$unit" == "M" || "$unit" == "G" ]]; then
                 if (( num >= min && num <= max )); then
-                    echo "$num$unit"
+                    echo "${num}${unit}"
                     return
                 fi
             fi
