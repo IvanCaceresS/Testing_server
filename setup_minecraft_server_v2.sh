@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Añadir el directorio de instalación de pip del usuario al PATH
+export PATH=$PATH:~/.local/bin
+
 # Función para obtener entrada del usuario con un valor por defecto y validar opciones
 prompt() {
     local input
@@ -126,16 +129,6 @@ download_and_extract_mods() {
     gdown --folder "https://drive.google.com/drive/folders/${folder_id}" -O ~/minecraft_server/mods
 }
 
-# Actualiza e instala las dependencias necesarias
-sudo apt-get update && \
-sudo apt-get install -y openjdk-21-jre-headless firewalld screen unzip python3-pip && \
-pip install gdown
-
-# Configura el firewall
-sudo firewall-cmd --permanent --zone=public --add-port=25565/tcp
-sudo firewall-cmd --permanent --zone=public --add-port=25565/udp
-sudo firewall-cmd --reload
-
 # Selección de la versión del servidor Forge
 version=$(prompt "Elige la versión de Forge para instalar:
     1) 1.21
@@ -184,6 +177,16 @@ memory=$(prompt_memory "Selecciona la cantidad de memoria para el servidor de Mi
 # Segunda comprobación del valor de la memoria
 check_memory "$memory"
 
+# Actualiza e instala las dependencias necesarias
+sudo apt-get update && \
+sudo apt-get install -y openjdk-21-jre-headless firewalld screen unzip python3-pip && \
+pip install gdown
+
+# Configura el firewall
+sudo firewall-cmd --permanent --zone=public --add-port=25565/tcp
+sudo firewall-cmd --permanent --zone=public --add-port=25565/udp
+sudo firewall-cmd --reload
+
 # Crea el directorio del servidor y descarga el instalador de Forge
 mkdir -p ~/minecraft_server && cd ~/minecraft_server
 wget "$server_url" -O server-installer.jar
@@ -199,6 +202,8 @@ sed -i "s/^#* -Xmx.*/-Xmx${memory}/" user_jvm_args.txt
 echo "eula=true" > eula.txt
 
 cd ~/minecraft_server
+
+echo "A continuación, se iniciará el servidor para que se generen los archivos de configuración. Cierra el servidor con Ctrl + C después de que haya terminado."
 
 # Ejecuta el script ./run.sh
 bash ./run.sh
@@ -229,6 +234,9 @@ if [[ "$import_mods" == "yes" ]]; then
     mods_url=$(prompt_url "Ingrese la URL de Google Drive que contiene la carpeta mods" "https://")
     download_and_extract_mods "$mods_url"
 fi
+
+# Eliminar la carpeta world si ya existe
+rm -rf ~/minecraft_server/world
 
 # Ejecutar el servidor en segundo plano con screen
 screen -dmS minecraft_server bash run.sh
