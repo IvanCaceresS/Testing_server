@@ -182,6 +182,7 @@ install_papermc() {
 
     # Crear el script de inicio
     echo "#!/bin/bash" > "$server_dir/start.sh"
+    echo "cd $server_dir" >> "$server_dir/start.sh"
     echo "screen -dmS papermc_server java -Xms$ram -Xmx$ram -jar server.jar --nogui" >> "$server_dir/start.sh"
 
     # Hacer ejecutable el script de inicio
@@ -192,6 +193,14 @@ install_papermc() {
 
     echo "PaperMC $version se ha descargado, instalado y el servidor se está ejecutando en una sesión de screen."
     echo "Use 'screen -r papermc_server' para adjuntar la sesión de servidor."
+
+    # Verificar si el servidor se está ejecutando
+    sleep 5
+    if screen -list | grep -q "papermc_server"; then
+        echo "El servidor se ha iniciado correctamente."
+    else
+        echo "El servidor no se pudo iniciar. Por favor, revise los logs para más detalles."
+    fi
 
     # Preguntar si desea instalar otra versión
     while true; do
