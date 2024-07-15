@@ -26,6 +26,27 @@ prompt_url() {
     fi
 }
 
+# Función para obtener entrada del usuario con un valor por defecto y validar texto
+prompt_text() {
+    read -p "$1 [$2]: " input
+    echo "${input:-$2}"
+}
+
+# Función para obtener entrada del usuario con un valor por defecto y validar números
+prompt_number() {
+    local input
+    while true; do
+        read -p "$1 [$2]: " input
+        input=${input:-$2}
+        if [[ "$input" =~ ^[0-9]+$ ]]; then
+            echo "$input"
+            return
+        else
+            echo "Por favor, ingrese un número válido."
+        fi
+    done
+}
+
 # Función para obtener la cantidad de memoria RAM del sistema (en MB)
 get_free_memory() {
     free -m | awk '/^Mem:/{print $2}'
@@ -96,6 +117,14 @@ check_memory() {
     exit 1
 }
 
+# Actualiza e instala las dependencias necesarias
+sudo apt-get update && \
+sudo apt-get install -y openjdk-21-jre-headless firewalld screen
+
+# Configura el firewall
+sudo firewall-cmd --permanent --zone=public --add-port=25565/tcp
+sudo firewall-cmd --permanent --zone=public --add-port=25565/udp
+sudo firewall-cmd --reload
 
 # Selección de la versión del servidor Forge
 version=$(prompt "Elige la versión de Forge para instalar:
@@ -145,15 +174,6 @@ memory=$(prompt_memory "Selecciona la cantidad de memoria para el servidor de Mi
 # Segunda comprobación del valor de la memoria
 check_memory "$memory"
 
-# Actualiza e instala las dependencias necesarias
-sudo apt-get update && \
-sudo apt-get install -y openjdk-21-jre-headless firewalld screen
-
-# Configura el firewall
-sudo firewall-cmd --permanent --zone=public --add-port=25565/tcp
-sudo firewall-cmd --permanent --zone=public --add-port=25565/udp
-sudo firewall-cmd --reload
-
 # Crea el directorio del servidor y descarga el instalador de Forge
 mkdir -p ~/minecraft_server && cd ~/minecraft_server
 wget "$server_url" -O server-installer.jar
@@ -167,6 +187,90 @@ sed -i "s/^#* -Xmx.*/-Xmx${memory}/" user_jvm_args.txt
 
 # Crea y acepta el archivo eula.txt
 echo "eula=true" > eula.txt
+
+# Configura la dificultad del servidor con entrada del usuario
+difficulty=$(prompt "Selecciona la dificultad del servidor (peaceful, easy, normal, hard)" "easy" "peaceful easy normal hard")
+
+# Configura el modo de juego con entrada del usuario
+gamemode=$(prompt "Selecciona el modo de juego del servidor (survival, creative, adventure, spectator)" "survival" "survival creative adventure spectator")
+
+# Configura la semilla del mundo con entrada del usuario
+level_seed=$(prompt_text "Ingresa la semilla del mundo (opcional)" "")
+
+# Configura el número máximo de jugadores con entrada del usuario
+max_players=$(prompt_number "Ingresa el número máximo de jugadores permitidos en el servidor" "20")
+
+# Configura si el PvP está activado con entrada del usuario
+pvp=$(prompt "Selecciona si el PvP está activado en el servidor (true, false)" "true" "true false")
+
+# Configura el modo online con entrada del usuario
+online_mode=$(prompt "Selecciona el modo online del servidor (true para solo premium, false para no premium)" "true" "true false")
+
+# Configura el mensaje del día (MOTD) con entrada del usuario
+motd=$(prompt_text "Ingresa el mensaje del día para mostrar en el servidor" "A Minecraft Server")
+
+# Crea el archivo server.properties
+cat > server.properties <<EOL
+# Minecraft server properties
+# $(date)
+enable-jmx-monitoring=false
+rcon.port=25575
+level-seed=$level_seed
+gamemode=$gamemode
+enable-command-block=false
+enable-query=false
+generator-settings={}
+enforce-secure-profile=true
+level-name=world
+motd=$motd
+query.port=25565
+pvp=$pvp
+generate-structures=true
+max-chained-neighbor-updates=1000000
+difficulty=$difficulty
+network-compression-threshold=256
+max-tick-time=60000
+require-resource-pack=false
+use-native-transport=true
+max-players=$max_players
+online-mode=$online_mode
+enable-status=true
+allow-flight=false
+initial-disabled-packs=
+broadcast-rcon-to-ops=true
+view-distance=10
+server-ip=
+resource-pack-prompt=
+allow-nether=true
+server-port=25565
+enable-rcon=false
+sync-chunk-writes=true
+op-permission-level=4
+prevent-proxy-connections=false
+hide-online-players=false
+resource-pack=
+entity-broadcast-range-percentage=100
+simulation-distance=10
+rcon.password=
+player-idle-timeout=0
+force-gamemode=false
+rate-limit=0
+hardcore=false
+white-list=false
+broadcast-console-to-ops=true
+spawn-npcs=true
+spawn-animals=true
+log-ips=true
+function-permission-level=2
+initial-enabled-packs=vanilla
+level-type=minecraft:normal
+text-filtering-config=
+spawn-monsters=true
+enforce-whitelist=false
+spawn-protection=16
+resource-pack-sha1=
+max-world-size=29999984
+EOL
 
 # Ejecuta el script ./run.sh
 bash ./run.sh
