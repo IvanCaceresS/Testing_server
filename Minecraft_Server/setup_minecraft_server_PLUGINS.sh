@@ -51,6 +51,95 @@ show_menu() {
     echo "0) Salir"
 }
 
+# Función para configurar server.properties
+configure_server_properties() {
+    local properties_file=$1
+
+    # Valores por defecto
+    local level_seed=""
+    local gamemode="survival"
+    local level_name="world"
+    local motd="A Minecraft Server"
+    local pvp="true"
+    local difficulty="easy"
+    local max_players="20"
+    local online_mode="true"
+
+    # Menú de configuración
+    echo "Configuración de server.properties"
+    read -p "Ingrese el seed del mundo (level-seed): " level_seed
+    read -p "Ingrese el modo de juego (gamemode) [survival/creative/adventure/spectator]: " gamemode
+    read -p "Ingrese el nombre del mundo (level-name): " level_name
+    read -p "Ingrese el mensaje del día (motd): " motd
+    read -p "Habilitar PvP (pvp) [true/false]: " pvp
+    read -p "Ingrese la dificultad (difficulty) [peaceful/easy/normal/hard]: " difficulty
+    read -p "Ingrese el número máximo de jugadores (max-players): " max_players
+    read -p "Habilitar modo en línea (online-mode) [true/false]: " online_mode
+
+    # Crear el archivo server.properties
+    echo "#Minecraft server properties" > $properties_file
+    echo "#$(date)" >> $properties_file
+    cat <<EOL >> $properties_file
+enable-jmx-monitoring=false
+rcon.port=25575
+level-seed=$level_seed
+gamemode=$gamemode
+enable-command-block=false
+enable-query=false
+generator-settings={}
+enforce-secure-profile=true
+level-name=$level_name
+motd=$motd
+query.port=25565
+pvp=$pvp
+generate-structures=true
+max-chained-neighbor-updates=1000000
+difficulty=$difficulty
+network-compression-threshold=256
+max-tick-time=60000
+require-resource-pack=false
+use-native-transport=true
+max-players=$max_players
+online-mode=$online_mode
+enable-status=true
+allow-flight=false
+initial-disabled-packs=
+broadcast-rcon-to-ops=true
+view-distance=10
+server-ip=
+resource-pack-prompt=
+allow-nether=true
+server-port=25565
+enable-rcon=false
+sync-chunk-writes=true
+op-permission-level=4
+prevent-proxy-connections=false
+hide-online-players=false
+resource-pack=
+entity-broadcast-range-percentage=100
+simulation-distance=10
+rcon.password=
+player-idle-timeout=0
+force-gamemode=false
+rate-limit=0
+hardcore=false
+white-list=false
+broadcast-console-to-ops=true
+spawn-npcs=true
+spawn-animals=true
+log-ips=true
+function-permission-level=2
+initial-enabled-packs=vanilla
+level-type=minecraft:normal
+text-filtering-config=
+spawn-monsters=true
+enforce-whitelist=false
+spawn-protection=16
+resource-pack-sha1=
+max-world-size=29999984
+EOL
+}
+
 # Función para descargar e instalar la versión seleccionada
 install_papermc() {
     local url=$1
@@ -66,17 +155,28 @@ install_papermc() {
     # Descargar el archivo
     wget -O ~/papermc/$version/server.jar $url
 
+    # Crear y aceptar el eula.txt
+    echo "eula=true" > ~/papermc/$version/eula.txt
+
+    # Configurar server.properties
+    configure_server_properties "~/papermc/$version/server.properties"
+
     # Solicitar la cantidad de RAM
     local total_mem=$(free -m | awk '/^Mem:/{print $2}')
-    local max_mem=$(($total_mem * 80 / 100))M
+    local max_mem=$(($total_mem * 80 / 100))
 
     while true; do
-        read -p "Ingrese la cantidad de RAM para el servidor (512M - $max_mem): " ram
-        if [[ $ram =~ ^[0-9]+[MG]$ ]] && [[ ${ram%[MG]} -ge 512 ]] && [[ ${ram%[MG]} -le ${max_mem%M} ]]; then
-            break
-        else
-            echo "Cantidad de RAM no válida. Intente nuevamente."
+        read -p "Ingrese la cantidad de RAM para el servidor (512M - ${max_mem}M): " ram
+        if [[ $ram =~ ^[0-9]+[MG]$ ]]; then
+            local ram_value=${ram%[MG]}
+            if [[ $ram == *M ]]; then
+                [[ $ram_value -ge 512 && $ram_value -le $max_mem ]] && break
+            elif [[ $ram == *G ]]; then
+                ram_value=$(($ram_value * 1024))
+                [[ $ram_value -ge 512 && $ram_value -le $max_mem ]] && break
+            fi
         fi
+        echo "Cantidad de RAM no válida. Intente nuevamente."
     done
 
     # Crear el script de inicio
@@ -86,8 +186,21 @@ install_papermc() {
     # Hacer ejecutable el script de inicio
     chmod +x ~/papermc/$version/start.sh
 
-    echo "PaperMC $version se ha descargado e instalado en ~/papermc/$version"
-    echo "Use '~/papermc/$version/start.sh' para iniciar el servidor."
+    # Iniciar el servidor
+    ~/papermc/$version/start.sh
+
+    echo "PaperMC $version se ha descargado, instalado y el servidor se está ejecutando en una sesión de screen."
+    echo "Use 'screen -r papermc_server' para adjuntar la sesión de servidor."
+
+    # Preguntar si desea instalar otra versión
+    while true; do
+        read -p "¿Desea instalar otra versión? (s/n): " yn
+        case $yn in
+            [Nn]* ) exit;;
+            [Ss]* ) return;;
+            * ) echo "Por favor responda s o n.";;
+        esac
+    done
 }
 
 # Instalar dependencias al inicio
