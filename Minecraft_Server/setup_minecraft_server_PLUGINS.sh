@@ -153,7 +153,7 @@ download_plugins() {
     local plugins_dir=$1
     mkdir -p "$plugins_dir"
     chmod 775 "$plugins_dir"
-    echo "¿Desea instalar los siguientes plugins?"
+    
     declare -A plugins
     plugins=(
         ["GUI Admin Tools"]="https://www.spigotmc.org/resources/1-16-1-20-4-%E2%9B%8F%EF%B8%8F-gui-admin-tools-free-%E2%9B%8F%EF%B8%8F.108689/download?version=540552"
@@ -176,22 +176,23 @@ download_plugins() {
         ["Fancy Physics"]="https://www.spigotmc.org/resources/fancy-physics-%E2%9C%A8-1-19-4-1-20-6.110500/download?version=542723"
     )
 
-    for plugin in "${!plugins[@]}"; do
-        read -p "¿Desea instalar $plugin? (s/n): " yn
-        case $yn in
-            [Yy]* )
+    read -p "¿Desea instalar todos los plugins? (s/n): " yn
+    case $yn in
+        [Yy]* )
+            for plugin in "${!plugins[@]}"; do
                 wget -O "$plugins_dir/$(echo $plugin | tr ' ' '_').jar" "${plugins[$plugin]}"
                 echo "$plugin instalado."
-                ;;
-            [Nn]* )
-                echo "$plugin no será instalado."
-                ;;
-            * )
-                echo "Respuesta no válida. $plugin no será instalado."
-                ;;
-        esac
-    done
+            done
+            ;;
+        [Nn]* )
+            echo "No se instalarán plugins."
+            ;;
+        * )
+            echo "Respuesta no válida. No se instalarán plugins."
+            ;;
+    esac
 }
+
 
 # Función para descargar e instalar la versión seleccionada
 install_papermc() {
