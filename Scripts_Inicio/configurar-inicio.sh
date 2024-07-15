@@ -13,18 +13,17 @@ if [ ! -f "$expanded_path" ]; then
 fi
 
 # Crear el script de inicio
-sudo bash -c "cat << 'EOL' > /usr/local/bin/startup-script.sh
+sudo bash -c "cat <<EOL > /usr/local/bin/startup-script.sh
 #!/bin/bash
 
 LOGFILE=\"/var/log/startup-script.log\"
 echo \"Script de inicio ejecutado el \$(date)\" >> \$LOGFILE
-cd $(dirname $expanded_path)
-echo \"Directorio cambiado a $(dirname $expanded_path)\" >> \$LOGFILE
-/usr/bin/screen -dmS papermc_server /usr/bin/java -Xms16G -Xmx16G -jar $(basename $expanded_path) --nogui
+echo \"Ejecutando: $expanded_path\" >> \$LOGFILE
+$expanded_path >> \$LOGFILE 2>&1
 if [ \$? -eq 0 ]; then
-  echo \"Servidor Minecraft iniciado correctamente\" >> \$LOGFILE
+  echo \"Script ejecutado correctamente\" >> \$LOGFILE
 else
-  echo \"Error al iniciar el servidor Minecraft\" >> \$LOGFILE
+  echo \"Error al ejecutar el script\" >> \$LOGFILE
 fi
 EOL"
 
@@ -38,7 +37,7 @@ fi
 sudo chmod +x /usr/local/bin/startup-script.sh
 
 # Crear el archivo de servicio de systemd
-sudo bash -c "cat << 'EOL' > /etc/systemd/system/startup-script.service
+sudo bash -c "cat <<EOL > /etc/systemd/system/startup-script.service
 [Unit]
 Description=Ejecutar script al inicio
 
