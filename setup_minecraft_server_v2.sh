@@ -120,19 +120,22 @@ check_memory() {
     exit 1
 }
 
-# Función para descargar y extraer mods desde una carpeta de Google Drive
-download_and_extract_mods() {
-    local folder_url="$1"
-    local folder_id=$(echo "$folder_url" | sed -n 's#.*folders/\(.*\)\?usp=sharing#\1#p')
-
-    # Descargar todos los archivos de la carpeta usando gdown con la opción --remaining-ok
-    gdown --folder --remaining-ok "https://drive.google.com/drive/folders/${folder_id}" -O ~/minecraft_server/mods
+# Función para descargar y extraer mods desde una URL de WeTransfer
+download_mods_from_wetransfer() {
+    local url="$1"
+    local output_dir="$2"
+    local output_file="$3"
+    mkdir -p "$output_dir"
+    curl "$url" --location --output "${output_dir}/${output_file}"
+    unzip "${output_dir}/${output_file}" -d "${output_dir}"
+    rm "${output_dir}/${output_file}"
+    mv "${output_dir}/mods"/* "${output_dir}"
+    rm -r "${output_dir}/mods"
 }
 
 # Actualiza e instala las dependencias necesarias
 sudo apt-get update && \
-sudo apt-get install -y openjdk-21-jre-headless firewalld screen unzip python3-pip && \
-sudo pip3 install gdown
+sudo apt-get install -y openjdk-21-jre-headless firewalld screen unzip curl
 
 # Configura el firewall
 sudo firewall-cmd --permanent --zone=public --add-port=25565/tcp
@@ -227,10 +230,10 @@ sed -i "s/^online-mode=.*/online-mode=$online_mode/" server.properties
 sed -i "s/^pvp=.*/pvp=$pvp/" server.properties
 
 # Preguntar si se desean importar mods
-import_mods=$(prompt "¿Desea importar mods desde una URL de Google Drive? (yes/no)" "no" "yes no")
+import_mods=$(prompt "¿Desea importar mods desde una URL de WeTransfer? (yes/no)" "no" "yes no")
 if [[ "$import_mods" == "yes" ]]; then
-    mods_url=$(prompt_url "Ingrese la URL de Google Drive que contiene la carpeta mods" "https://")
-    download_and_extract_mods "$mods_url"
+    mods_url=$(prompt_url "Ingrese la URL de WeTransfer que contiene los mods" "https://")
+    download_mods_from_wetransfer "$mods_url" ~/minecraft_server/mods mods.zip
 fi
 
 # Eliminar la carpeta world si ya existe
