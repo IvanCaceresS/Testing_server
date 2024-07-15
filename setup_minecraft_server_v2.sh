@@ -125,8 +125,8 @@ download_and_extract_mods() {
     local folder_url="$1"
     local folder_id=$(echo "$folder_url" | sed -n 's#.*folders/\(.*\)\?usp=sharing#\1#p')
 
-    # Descargar todos los archivos de la carpeta usando gdown
-    gdown --folder "https://drive.google.com/drive/folders/${folder_id}" -O ~/minecraft_server/mods
+    # Descargar todos los archivos de la carpeta usando gdown con la opción --remaining-ok
+    gdown --folder --remaining-ok "https://drive.google.com/drive/folders/${folder_id}" -O ~/minecraft_server/mods
 }
 
 # Actualiza e instala las dependencias necesarias
