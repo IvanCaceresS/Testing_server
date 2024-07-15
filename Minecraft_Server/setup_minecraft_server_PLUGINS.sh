@@ -67,14 +67,22 @@ configure_server_properties() {
 
     # Menú de configuración
     echo "Configuración de server.properties"
-    read -p "Ingrese el seed del mundo (level-seed): " level_seed
-    read -p "Ingrese el modo de juego (gamemode) [survival/creative/adventure/spectator]: " gamemode
-    read -p "Ingrese el nombre del mundo (level-name): " level_name
-    read -p "Ingrese el mensaje del día (motd): " motd
-    read -p "Habilitar PvP (pvp) [true/false]: " pvp
-    read -p "Ingrese la dificultad (difficulty) [peaceful/easy/normal/hard]: " difficulty
-    read -p "Ingrese el número máximo de jugadores (max-players): " max_players
-    read -p "Habilitar modo en línea (online-mode) [true/false]: " online_mode
+    read -p "Ingrese el seed del mundo (level-seed) [$level_seed]: " input
+    level_seed=${input:-$level_seed}
+    read -p "Ingrese el modo de juego (gamemode) [survival/creative/adventure/spectator] [$gamemode]: " input
+    gamemode=${input:-$gamemode}
+    read -p "Ingrese el nombre del mundo (level-name) [$level_name]: " input
+    level_name=${input:-$level_name}
+    read -p "Ingrese el mensaje del día (motd) [$motd]: " input
+    motd=${input:-$motd}
+    read -p "Habilitar PvP (pvp) [true/false] [$pvp]: " input
+    pvp=${input:-$pvp}
+    read -p "Ingrese la dificultad (difficulty) [peaceful/easy/normal/hard] [$difficulty]: " input
+    difficulty=${input:-$difficulty}
+    read -p "Ingrese el número máximo de jugadores (max-players) [$max_players]: " input
+    max_players=${input:-$max_players}
+    read -p "Habilitar modo en línea (online-mode) [true/false] [$online_mode]: " input
+    online_mode=${input:-$online_mode}
 
     # Crear el archivo server.properties
     echo "#Minecraft server properties" > "$properties_file"
