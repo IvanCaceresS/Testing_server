@@ -3,7 +3,7 @@
 
 ```bash 
     cd ~
-    sudo rm -r *
+    sudo rm -r Testing_server
     git clone https://github.com/IvanCaceresS/Testing_server
     cd ~/Testing_server/Minecraft_Server
     chmod +x setup_minecraft_server_VANILLA.sh
@@ -14,7 +14,7 @@
 
 ```bash 
     cd ~
-    sudo rm -r *
+    sudo rm -r Testing_server
     git clone https://github.com/IvanCaceresS/Testing_server
     cd ~/Testing_server/Minecraft_Server
     chmod +x setup_minecraft_server_FORGE.sh
@@ -25,7 +25,7 @@
 
 ```bash 
     cd ~
-    sudo rm -r *
+    sudo rm -r Testing_server
     git clone https://github.com/IvanCaceresS/Testing_server
     cd ~/Testing_server/Minecraft_Server
     chmod +x setup_minecraft_server_PLUGINS.sh

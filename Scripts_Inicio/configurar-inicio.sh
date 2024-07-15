@@ -19,7 +19,7 @@ sudo bash -c "cat <<EOL > /usr/local/bin/startup-script.sh
 LOGFILE=\"/var/log/startup-script.log\"
 echo \"Script de inicio ejecutado el \$(date)\" >> \$LOGFILE
 echo \"Ejecutando: $expanded_path\" >> \$LOGFILE
-$expanded_path >> \$LOGFILE 2>&1
+su - ubuntu -c '$expanded_path' >> \$LOGFILE 2>&1
 if [ \$? -eq 0 ]; then
   echo \"Script ejecutado correctamente\" >> \$LOGFILE
 else
