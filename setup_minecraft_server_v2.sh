@@ -71,7 +71,7 @@ prompt_forge_url() {
                         echo "Error: La URL no es válida para descargar el instalador."
                         continue
                     else
-                        echo "$server_url"
+                        echo "URL personalizada válida: $server_url"
                         return
                     fi
                     ;;
