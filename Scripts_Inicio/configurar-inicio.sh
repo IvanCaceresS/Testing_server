@@ -3,17 +3,29 @@
 # Solicitar la ruta del script que se desea ejecutar al inicio
 read -p "Introduce la ruta completa del script que deseas ejecutar al inicio: " script_path
 
+# Verificar si el archivo existe
+if [ ! -f "$script_path" ]; then
+  echo "El archivo $script_path no existe."
+  exit 1
+fi
+
 # Crear el script de inicio
-cat <<EOL > /usr/local/bin/startup-script.sh
+sudo bash -c "cat <<EOL > /usr/local/bin/startup-script.sh
 #!/bin/bash
 $script_path
-EOL
+EOL"
+
+# Verificar si el script se ha creado correctamente
+if [ $? -ne 0 ]; then
+  echo "Error al crear el script de inicio."
+  exit 1
+fi
 
 # Hacer el script ejecutable
-chmod +x /usr/local/bin/startup-script.sh
+sudo chmod +x /usr/local/bin/startup-script.sh
 
 # Crear el archivo de servicio de systemd
-cat <<EOL > /etc/systemd/system/startup-script.service
+sudo bash -c "cat <<EOL > /etc/systemd/system/startup-script.service
 [Unit]
 Description=Ejecutar script al inicio
 
@@ -22,12 +34,18 @@ ExecStart=/usr/local/bin/startup-script.sh
 
 [Install]
 WantedBy=multi-user.target
-EOL
+EOL"
+
+# Verificar si el archivo de servicio se ha creado correctamente
+if [ $? -ne 0 ]; then
+  echo "Error al crear el archivo de servicio de systemd."
+  exit 1
+fi
 
 # Recargar systemd para que reconozca el nuevo servicio
-systemctl daemon-reload
+sudo systemctl daemon-reload
 
 # Habilitar el servicio para que se ejecute al inicio
-systemctl enable startup-script.service
+sudo systemctl enable startup-script.service
 
 echo "El script se ha configurado para ejecutarse al inicio."
