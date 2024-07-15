@@ -128,7 +128,8 @@ download_and_extract_mods() {
 
 # Actualiza e instala las dependencias necesarias
 sudo apt-get update && \
-sudo apt-get install -y openjdk-21-jre-headless firewalld screen unzip gdown
+sudo apt-get install -y openjdk-21-jre-headless firewalld screen unzip python3-pip && \
+pip install gdown
 
 # Configura el firewall
 sudo firewall-cmd --permanent --zone=public --add-port=25565/tcp
