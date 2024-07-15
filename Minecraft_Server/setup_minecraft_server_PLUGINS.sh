@@ -77,9 +77,9 @@ configure_server_properties() {
     read -p "Habilitar modo en línea (online-mode) [true/false]: " online_mode
 
     # Crear el archivo server.properties
-    echo "#Minecraft server properties" > $properties_file
-    echo "#$(date)" >> $properties_file
-    cat <<EOL >> $properties_file
+    echo "#Minecraft server properties" > "$properties_file"
+    echo "#$(date)" >> "$properties_file"
+    cat <<EOL >> "$properties_file"
 enable-jmx-monitoring=false
 rcon.port=25575
 level-seed=$level_seed
@@ -150,16 +150,17 @@ install_papermc() {
     install_java $java_version
 
     # Crear directorio para el servidor
-    mkdir -p ~/papermc/$version
+    local server_dir=~/papermc/$version
+    mkdir -p "$server_dir"
 
     # Descargar el archivo
-    wget -O ~/papermc/$version/server.jar $url
+    wget -O "$server_dir/server.jar" $url
 
     # Crear y aceptar el eula.txt
-    echo "eula=true" > ~/papermc/$version/eula.txt
+    echo "eula=true" > "$server_dir/eula.txt"
 
     # Configurar server.properties
-    configure_server_properties "~/papermc/$version/server.properties"
+    configure_server_properties "$server_dir/server.properties"
 
     # Solicitar la cantidad de RAM
     local total_mem=$(free -m | awk '/^Mem:/{print $2}')
@@ -180,14 +181,14 @@ install_papermc() {
     done
 
     # Crear el script de inicio
-    echo "#!/bin/bash" > ~/papermc/$version/start.sh
-    echo "screen -dmS papermc_server java -Xms$ram -Xmx$ram -jar server.jar --nogui" >> ~/papermc/$version/start.sh
+    echo "#!/bin/bash" > "$server_dir/start.sh"
+    echo "screen -dmS papermc_server java -Xms$ram -Xmx$ram -jar server.jar --nogui" >> "$server_dir/start.sh"
 
     # Hacer ejecutable el script de inicio
-    chmod +x ~/papermc/$version/start.sh
+    chmod +x "$server_dir/start.sh"
 
     # Iniciar el servidor
-    ~/papermc/$version/start.sh
+    "$server_dir/start.sh"
 
     echo "PaperMC $version se ha descargado, instalado y el servidor se está ejecutando en una sesión de screen."
     echo "Use 'screen -r papermc_server' para adjuntar la sesión de servidor."
