@@ -3,14 +3,15 @@
 # Función para obtener entrada del usuario con un valor por defecto y validar opciones
 prompt() {
     local input
+    local valid_options="$3"
     while true; do
         read -p "$1 [$2]: " input
         input=${input:-$2}
-        if [[ " $3 " == *" $input "* ]]; then
+        if [[ " $valid_options " == *" $input "* ]]; then
             echo "$input"
             return
         else
-            echo "Opción no válida. Las opciones válidas son: $3"
+            echo "Opción no válida. Las opciones válidas son: $valid_options"
         fi
     done
 }
@@ -119,16 +120,20 @@ echo "8) OTRA (Ingresa una URL personalizada)"
 server_url=$(prompt_forge_url "Elige la versión de Forge para instalar" "1.21 1.20.6 1.20.4 1.20.3 1.20.2 1.20.1 1.20 OTRA")
 
 # Descarga y ejecuta el instalador de Forge
-if [[ "$server_url" =~ ^https:// ]]; then
-    wget "$server_url" -O server-installer.jar
-    if [ $? -ne 0 ]; then
-        echo "Error: No se pudo descargar el instalador desde la URL proporcionada."
-        exit 1
+while true; do
+    if [[ "$server_url" =~ ^https:// ]]; then
+        wget "$server_url" -O server-installer.jar
+        if [ $? -ne 0 ]; then
+            echo "Error: No se pudo descargar el instalador desde la URL proporcionada."
+            server_url=$(prompt_forge_url "Elige la versión de Forge para instalar" "1.21 1.20.6 1.20.4 1.20.3 1.20.2 1.20.1 1.20 OTRA")
+        else
+            break
+        fi
+    else
+        echo "Error: URL no válida para descargar el instalador."
+        server_url=$(prompt_forge_url "Elige la versión de Forge para instalar" "1.21 1.20.6 1.20.4 1.20.3 1.20.2 1.20.1 1.20 OTRA")
     fi
-else
-    echo "Error: URL no válida para descargar el instalador."
-    exit 1
-fi
+done
 
 java -jar server-installer.jar --installServer
 server_jar="forge-$(basename "$server_url" | cut -d- -f2-4)-installer.jar"
