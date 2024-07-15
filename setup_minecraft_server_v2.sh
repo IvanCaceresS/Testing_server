@@ -41,24 +41,31 @@ prompt_forge_url() {
         case $input in
             1)
                 server_url="https://maven.minecraftforge.net/net/minecraftforge/forge/1.21-51.0.24/forge-1.21-51.0.24-installer.jar"
+                return
                 ;;
             2)
                 server_url="https://maven.minecraftforge.net/net/minecraftforge/forge/1.20.6-50.1.0/forge-1.20.6-50.1.0-installer.jar"
+                return
                 ;;
             3)
                 server_url="https://maven.minecraftforge.net/net/minecraftforge/forge/1.20.4-49.1.0/forge-1.20.4-49.1.0-installer.jar"
+                return
                 ;;
             4)
                 server_url="https://maven.minecraftforge.net/net/minecraftforge/forge/1.20.3-49.0.2/forge-1.20.3-49.0.2-installer.jar"
+                return
                 ;;
             5)
                 server_url="https://maven.minecraftforge.net/net/minecraftforge/forge/1.20.2-48.1.0/forge-1.20.2-48.1.0-installer.jar"
+                return
                 ;;
             6)
                 server_url="https://maven.minecraftforge.net/net/minecraftforge/forge/1.20.1-47.3.0/forge-1.20.1-47.3.0-installer.jar"
+                return
                 ;;
             7)
                 server_url="https://maven.minecraftforge.net/net/minecraftforge/forge/1.20-46.0.14/forge-1.20-46.0.14-installer.jar"
+                return
                 ;;
             8)
                 read -p "Ingresa la URL personalizada del servidor Forge: " server_url
@@ -136,7 +143,7 @@ min_mem=$(get_min_memory)
 memory=$(prompt "Selecciona la cantidad de memoria para el servidor de Minecraft. Introduce un valor como 512M o 2G" "2G" "512M 1G 1.5G 2G 3G 4G 6G 8G")
 
 # Editar el archivo user_jvm_args.txt para configurar la RAM
-sed -i "s/# -Xmx4G/-Xmx${memory}/" user_jvm_args.txt
+sed -i "s/^# -Xmx.*/-Xmx${memory}/" user_jvm_args.txt
 
 # Crea y acepta el archivo eula.txt
 echo "eula=true" > eula.txt
