@@ -9,3 +9,5 @@
     chmod +x configurar-inicio.sh
     sudo ./configurar-inicio.sh
 ```
+
+Ejemplo de ruta para poner ~/papermc/1.20/start.sh
