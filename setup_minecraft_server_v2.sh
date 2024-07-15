@@ -117,9 +117,18 @@ check_memory() {
     exit 1
 }
 
+# Función para descargar y extraer mods desde una carpeta de Google Drive
+download_and_extract_mods() {
+    local folder_url="$1"
+    local folder_id=$(echo "$folder_url" | sed -n 's#.*folders/\(.*\)\?usp=sharing#\1#p')
+
+    # Descargar todos los archivos de la carpeta usando gdown
+    gdown --folder "https://drive.google.com/drive/folders/${folder_id}" -O ~/minecraft_server/mods
+}
+
 # Actualiza e instala las dependencias necesarias
 sudo apt-get update && \
-sudo apt-get install -y openjdk-21-jre-headless firewalld screen unzip
+sudo apt-get install -y openjdk-21-jre-headless firewalld screen unzip gdown
 
 # Configura el firewall
 sudo firewall-cmd --permanent --zone=public --add-port=25565/tcp
@@ -135,8 +144,7 @@ version=$(prompt "Elige la versión de Forge para instalar:
     5) 1.20.2
     6) 1.20.1
     7) 1.20
-    8) OTRA (Ingresa una URL personalizada)
-    9) Serverpack (Ingresa una URL para descargar un paquete de servidor)" "1.21" "1.21 1.20.6 1.20.4 1.20.3 1.20.2 1.20.1 1.20 OTRA Serverpack")
+    8) OTRA (Ingresa una URL personalizada)" "1.21" "1.21 1.20.6 1.20.4 1.20.3 1.20.2 1.20.1 1.20 OTRA")
 
 case $version in
     1.21)
@@ -159,48 +167,6 @@ case $version in
         ;;
     1.20)
         server_url="https://maven.minecraftforge.net/net/minecraftforge/forge/1.20-46.0.14/forge-1.20-46.0.14-installer.jar"
-        ;;
-    Serverpack)
-        serverpack_url=$(prompt_url "Ingresa la URL del paquete de servidor" "https://")
-        mkdir -p ~/minecraft_server && cd ~/minecraft_server
-        wget "$serverpack_url" -O serverpack.zip
-        unzip serverpack.zip
-        rm serverpack.zip
-
-        # Aceptar el EULA
-        echo "eula=true" > eula.txt
-
-        # Solicitar memoria y modificar JAVA_ARGS en variables.txt
-        memory=$(prompt_memory "Selecciona la cantidad de memoria para el servidor de Minecraft. Introduce un valor como 512M o 2G")
-        check_memory "$memory"
-        sed -i "s/^JAVA_ARGS=.*/JAVA_ARGS=\"-Xmx${memory} -Xms${memory}\"/" variables.txt
-
-        # Solicitar configuración del archivo server.properties
-        difficulty=$(prompt "Selecciona la dificultad del servidor (peaceful, easy, normal, hard)" "normal" "peaceful easy normal hard")
-        gamemode=$(prompt "Selecciona el modo de juego del servidor (survival, creative, adventure, spectator)" "survival" "survival creative adventure spectator")
-        level_seed=$(prompt_text "Ingresa la semilla del mundo (opcional)" "")
-        max_players=$(prompt_number "Ingresa el número máximo de jugadores permitidos en el servidor" "20")
-        pvp=$(prompt "Selecciona si el PvP está activado en el servidor (true, false)" "true" "true false")
-        online_mode=$(prompt "Selecciona el modo online del servidor (true para solo premium, false para no premium)" "true" "true false")
-        motd=$(prompt_text "Ingresa el mensaje del día para mostrar en el servidor" "Better MC [FORGE] 1.20.1")
-
-        # Modificar el archivo server.properties
-        sed -i "s/^difficulty=.*/difficulty=$difficulty/" server.properties
-        sed -i "s/^gamemode=.*/gamemode=$gamemode/" server.properties
-        sed -i "s/^level-seed=.*/level-seed=$level_seed/" server.properties
-        sed -i "s/^max-players=.*/max-players=$max_players/" server.properties
-        sed -i "s/^motd=.*/motd=$motd/" server.properties
-        sed -i "s/^online-mode=.*/online-mode=$online_mode/" server.properties
-        sed -i "s/^pvp=.*/pvp=$pvp/" server.properties
-
-        # Ejecuta el script start.sh si existe
-        if [ -f start.sh ]; then
-            bash start.sh
-        else
-            echo "No se encontró el archivo start.sh en el paquete del servidor."
-            exit 1
-        fi
-        exit 0
         ;;
     OTRA)
         server_url=$(prompt_url "Ingresa la URL personalizada del servidor Forge" "https://maven.minecraftforge.net/net/minecraftforge/forge")
@@ -231,6 +197,13 @@ sed -i "s/^#* -Xmx.*/-Xmx${memory}/" user_jvm_args.txt
 # Crea y acepta el archivo eula.txt
 echo "eula=true" > eula.txt
 
+cd ~/minecraft_server
+
+# Ejecuta el script ./run.sh
+bash ./run.sh
+
+echo "A continuación, se configurará el archivo server.properties."
+
 # Solicitar configuración del archivo server.properties
 difficulty=$(prompt "Selecciona la dificultad del servidor (peaceful, easy, normal, hard)" "normal" "peaceful easy normal hard")
 gamemode=$(prompt "Selecciona el modo de juego del servidor (survival, creative, adventure, spectator)" "survival" "survival creative adventure spectator")
@@ -249,8 +222,17 @@ sed -i "s/^motd=.*/motd=$motd/" server.properties
 sed -i "s/^online-mode=.*/online-mode=$online_mode/" server.properties
 sed -i "s/^pvp=.*/pvp=$pvp/" server.properties
 
-# Ejecuta el script ./run.sh
-bash ./run.sh
+# Preguntar si se desean importar mods
+import_mods=$(prompt "¿Desea importar mods desde una URL de Google Drive? (yes/no)" "no" "yes no")
+if [[ "$import_mods" == "yes" ]]; then
+    mods_url=$(prompt_url "Ingrese la URL de Google Drive que contiene la carpeta mods" "https://")
+    download_and_extract_mods "$mods_url"
+fi
+
+# Ejecutar el servidor en segundo plano con screen
+screen -dmS minecraft_server bash run.sh
 
 # Mensaje final
-echo "Servidor de Minecraft Forge configurado y ejecutándose."
+echo "Servidor de Minecraft Forge configurado y ejecutándose en segundo plano con screen."
+echo "Para ver la consola del servidor, usa: screen -r minecraft_server"
+echo "Para salir de la consola pero dejar el servidor ejecutándose, presiona Ctrl + A seguido de D."
