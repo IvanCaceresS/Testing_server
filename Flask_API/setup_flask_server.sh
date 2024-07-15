@@ -3,11 +3,19 @@
 # Actualiza el sistema e instala paquetes necesarios
 sudo apt update
 sudo apt upgrade -y
-sudo apt install -y python3-pip python3-venv
+sudo apt install -y python3-pip python3-venv firewalld
 
-# Crea un directorio para el proyecto Flask
-mkdir flask_project
-cd flask_project
+# Inicia y habilita firewalld
+sudo systemctl start firewalld
+sudo systemctl enable firewalld
+
+# Abre el puerto 5000 para Flask
+sudo firewall-cmd --permanent --add-port=5000/tcp
+sudo firewall-cmd --reload
+
+# Crea un directorio para el proyecto Flask en el directorio home del usuario
+mkdir ~/flask_project
+cd ~/flask_project
 
 # Crea y activa un entorno virtual
 python3 -m venv venv
