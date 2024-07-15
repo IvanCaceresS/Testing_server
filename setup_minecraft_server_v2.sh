@@ -37,7 +37,8 @@ get_free_memory() {
 
 # Función para obtener la memoria máxima permitida (en MB, 80% del total)
 get_max_memory() {
-    local total_mem=$(get_free_memory)
+    local total_mem
+    total_mem=$(get_free_memory)
     echo $((total_mem * 80 / 100))
 }
 
@@ -49,8 +50,10 @@ get_min_memory() {
 # Función para solicitar la cantidad de memoria con validación
 prompt_memory() {
     local input
-    local min_mem=$(get_min_memory)
-    local max_mem=$(get_max_memory)
+    local min_mem
+    local max_mem
+    min_mem=$(get_min_memory)
+    max_mem=$(get_max_memory)
 
     while true; do
         read -p "$1 [Min: ${min_mem}M, Max: ${max_mem}M, ej. 512M, 2G]: " input
@@ -118,6 +121,10 @@ case $version in
         ;;
     OTRA)
         server_url=$(prompt_url "Ingresa la URL personalizada del servidor Forge" "https://maven.minecraftforge.net")
+        ;;
+    *)
+        echo "Opción no válida. Seleccione una de las opciones listadas o ingrese OTRA para una URL personalizada."
+        exit 1
         ;;
 esac
 
