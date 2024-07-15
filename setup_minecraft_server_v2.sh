@@ -132,6 +132,7 @@ min_mem=$(get_min_memory)
 memory=$(prompt_number_range "Selecciona la cantidad de memoria para el servidor de Minecraft. Introduce un valor como 512M o 2G" $min_mem $max_mem)
 
 # Editar el archivo user_jvm_args.txt para configurar la RAM
+echo "Valor de memory antes de sed: $memory"
 sed -i "s/# -Xmx4G/-Xmx$memory/" user_jvm_args.txt
 
 # Crea y acepta el archivo eula.txt
