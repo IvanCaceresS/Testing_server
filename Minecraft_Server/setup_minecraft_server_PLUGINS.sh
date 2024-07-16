@@ -64,6 +64,7 @@ configure_server_properties() {
     local difficulty="easy"
     local max_players="20"
     local online_mode="true"
+    local spawn_protection="16"
 
     # Menú de configuración
     echo "Configuración de server.properties"
@@ -83,6 +84,8 @@ configure_server_properties() {
     max_players=${input:-$max_players}
     read -p "Habilitar modo en línea (online-mode) [true/false] [$online_mode]: " input
     online_mode=${input:-$online_mode}
+    read -p "Rango de spawn_protection [$spawn_protection]: " input
+    spawn_protection=${input:-$spawn_protection}
 
     # Crear el archivo server.properties
     echo "#Minecraft server properties" > "$properties_file"
@@ -142,7 +145,7 @@ level-type=minecraft:normal
 text-filtering-config=
 spawn-monsters=true
 enforce-whitelist=false
-spawn-protection=16
+spawn-protection=$spawn_protection
 resource-pack-sha1=
 max-world-size=29999984
 EOL
