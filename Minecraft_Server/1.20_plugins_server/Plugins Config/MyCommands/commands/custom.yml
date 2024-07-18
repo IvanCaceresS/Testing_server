@@ -1,0 +1,7 @@
+tp_spawn:
+   command: /spawn
+   type: TELEPORT
+   location_name: spawn
+   itemcost: "GOLD_INGOT:5"
+   success-message: "&aPagaste 5 lingotes de oro"
+   error-message: "&4Este comando tiene un valor de 5 lingotes de oro!"
