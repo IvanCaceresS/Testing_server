@@ -357,7 +357,7 @@ auto-removal:
   enabled: true
   broadcast-message: '&6[ClearLag] &aSe removieron +RemoveAmount objetos!'
   broadcast-removal: true
-  autoremoval-interval: 240
+  autoremoval-interval: 360
   world-filter:
   # - this_world <-This world will be ignored during removal!
   boat: false
@@ -386,8 +386,14 @@ auto-removal:
   # - Minecart !isMounted <- This entity will be REMOVED if it's NOT mounted
   # - Wolf !hasName <- This entity will be REMOVED if it doesn't have a name
   warnings:
-        - 'time:180 msg:&4[ClearLag] &cLos objetos seran eliminados en &7+remaining &csegundos!'
-        - 'time:220 msg:&4[ClearLag] &cLos objetos seran eliminados en &7+remaining &csegundos!'
+        - 'time:300 msg:&4[ClearLag] &cLos objetos seran eliminados en &7+remaining &csegundos!'
+        - 'time:340 msg:&4[ClearLag] &cLos objetos seran eliminados en &7+remaining &csegundos!'
+        - 'time:355 msg:&4[ClearLag] &cLos objetos seran eliminados en &7+remaining &csegundos!'
+        - 'time:356 msg:&4[ClearLag] &cLos objetos seran eliminados en &7+remaining &csegundos!'
+        - 'time:357 msg:&4[ClearLag] &cLos objetos seran eliminados en &7+remaining &csegundos!'
+        - 'time:358 msg:&4[ClearLag] &cLos objetos seran eliminados en &7+remaining &csegundos!'
+        - 'time:359 msg:&4[ClearLag] &cLos objetos seran eliminados en &7+remaining &csegundos!'
+
 #What should be removed during /lagg clear, nearly the same thing as auto-removal
 command-remove:
   world-filter:
