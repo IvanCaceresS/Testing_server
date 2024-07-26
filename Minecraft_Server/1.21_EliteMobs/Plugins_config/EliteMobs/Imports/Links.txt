@@ -1,4 +1,4 @@
 https://magmaguy.itch.io/em-story-mode-dungeons [em_id_the_palace.zip,em_id_the_city.zip,em_id_the_cave.zip,em_id_the_bridge_v3.zip,em_id_the_mines_v2.zip,em_id_the_climb_v6.zip]
 https://magmaguy.itch.io/elitemobs-the-adventurers-guild [em_adventurers_guild_v2.zip]
-https://magmaguy.itch.io/em-free-content[em_events_craftenmines_creations.zip,em_dark_cathedral.zip,em_enchantment_sanctums_free.zip,em_fireworks.zip,em_hallosseum.zip,em_sewers.zip,em_the_binder_of_worlds.zip,em_the_steamworks.zip,em_knights_castle_v6.zip,em_shadow_of_the_binder_of_worlds_v9.zip,em_north_pole_v6.zip,elitemobs_resource_pack.zip]
+https://magmaguy.itch.io/em-free-content [em_events_craftenmines_creations.zip,em_dark_cathedral.zip,em_enchantment_sanctums_free.zip,em_fireworks.zip,em_hallosseum.zip,em_sewers.zip,em_the_binder_of_worlds.zip,em_the_steamworks.zip,em_knights_castle_v6.zip,em_shadow_of_the_binder_of_worlds_v9.zip,em_north_pole_v6.zip,elitemobs_resource_pack.zip]
 https://magmaguy.itch.io/primis [em_primis_demo.zip]
