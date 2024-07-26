@@ -1,0 +1,11 @@
+default-max-homes: 1
+warmup: 5
+messagePrefix: true
+respawnAtHome: true
+confirmUnsafeTeleports: true
+blockCreatingUnsafeSethomes: true
+considerMidAirUnsafe: true
+alternateCommandExecutor: false
+enableDeleteAllHomesFromPlayerAdminCommand: false
+enableDeleteAllHomesInWorldAdminCommand: false
+kcgFeatureJoinMessage: true
