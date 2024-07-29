@@ -1,0 +1,289 @@
+only-player-command: "&c¡Este comando solo puede ser ejecutado por un jugador!"
+
+command-usage: "&cUso: /%command%"
+
+no-perm: "&c¡No tienes permiso para ejecutar este comando!"
+
+update-available: "&6[Duels] &aUna actualización &6%newversion% &adel plugin Duels está disponible. Descárgala desde &bhttps://www.spigotmc.org/resources/114685/"
+
+admin:
+  reload:
+    all-config-reloaded: "&a¡Las arenas, el idioma y la configuración predeterminada se han recargado!"
+  help:
+    - "&aComandos de Admin de Duelo:"
+    - "&e/dueladmin &7- &bMuestra este mensaje."
+    - "&e/dueladmin setspawn &7- &bEstablece la ubicación de aparición donde los jugadores serán teleportados después del combate."
+    - "&e/dueladmin createarena <arenaName> &7- &bCrea una arena con un nombre específico."
+    - "&e/dueladmin setarenapos <arenaName> pos<1/2> &7- &bEstablece los puntos de aparición de la arena (donde aparecen los jugadores)."
+    - "&e/dueladmin deletearena &7- &bElimina una arena con el nombre específico."
+    - "&e/dueladmin reload &7- &bRecarga la configuración."
+  arena-list:
+    list: "&aLista de arenas:"
+    meaning: "&aVerde &7- &2Activo &f| &4ROJO &7- &cInactivo"
+  set-pos:
+    success: "&b%pos% &ase estableció correctamente!"
+    arena-loaded: "&aHas completado la configuración de la arena con éxito. &6La arena se ha cargado."
+    wrong-arena: "&cLa arena con ese nombre no existe. Por favor, crea una con &6/dueladmin createarena <name>"
+    wrong-pos: "&cPosición incorrecta en el comando. Debes escribir pos1 o pos2. (pos1 para la posición de un jugador, pos2 para la posición del segundo jugador)"
+  create-arena:
+    already-exists: "&cLa arena con ese nombre ya existe. Si deseas modificar sus posiciones, escribe &6/dueladmin setarenapos&c. Si deseas crear una nueva arena, escribe &6/dueladmin createarena <name>&c."
+    success: "&a¡La arena &b%arena%&a se ha creado correctamente! Para establecer sus posiciones, intenta &6/dueladmin setarenapos"
+  delete-arena:
+    doesnt-exists: "&cLa arena con ese nombre no existe."
+    success: "&a¡La arena &6%arena%&a se ha eliminado correctamente!"
+  set-spawn:
+    success: "&a¡La ubicación de aparición se ha establecido correctamente!"
+duel:
+  betting:
+    not-enabled: "&c¡El sistema de apuestas no está habilitado!"
+    only-number: "&cLa cantidad de la apuesta solo puede ser un número."
+    insufficient-funds: "&c¡No tienes suficiente saldo para eso!"
+    insufficient-funds-sender: "&cEl remitente de la solicitud no tiene suficiente saldo."
+    out-of-range: "&cLa cantidad de la apuesta está fuera del rango. Intenta &b%minimum%&f-&6%maximum%"
+    bet-amount: "&a Apuesta: &e%amount% &6$"
+    bet-removed: "&cLa apuesta se ha retirado de tu saldo."
+    bet-added: "&aLa apuesta se ha agregado a tu saldo."
+    #in case of server restarts or players run out of duel time.
+    bet-added-back: "&cTu apuesta se ha devuelto a tu cuenta."
+  target-is-offline: "&cEl jugador indicado está desconectado."
+  no-arenas-available: "&cActualmente, no hay arenas disponibles."
+  arena-not-available: "&cEsa arena no está disponible."
+  no-request-sent: "&cNo has enviado una solicitud de duelo a &b%player%."
+  this-command-blocked: "&cEste comando no está permitido en duelos."
+  commands:
+    help:
+      - "&aComandos de Duelo:"
+      - "&e/duels &7- &bMuestra este mensaje."
+      - "&e/duel <player> &7- &bEnvía una solicitud de duelo al jugador."
+      - "&e/duels accept <player> &7- &bAcepta la solicitud de duelo de alguien."
+      - "&e/duels deny <player> &7- &bRechaza la solicitud de duelo de alguien."
+      - "&e/duels cancel <player> &7- &bCancela la solicitud de duelo a un jugador."
+      - "&e/duels spectate <player> &7- &bEspectar el duelo del jugador."
+      - "&e/duels stopspectate &7- &bDejar de espectar."
+      - "&e/duels queue &7- &bAñadir/Eliminarte de la cola."
+      - "&e/duels ignore &7- &bIgnorar/Dejar de ignorar a un jugador."
+    duel:
+      request-sent: "$<green>¡Has enviado una solicitud de duelo a</green> <aqua>%player%</aqua><green>!</green> <red><b><hover:show_text:'<green>¡Haz clic para cancelar esta solicitud!</green>'><click:run_command:'/duels cancel %player%'>Cancelar</click></hover></b></red>"
+      click: "$<green>Haz clic</green> <red><b><hover:show_text:'<red>¡Haz clic para rechazar esta solicitud!</red>'><click:run_command:'/duels deny %player%'>RECHAZAR</click></hover></b></red>/<green><b><hover:show_text:'<green>¡Haz clic para aceptar esta solicitud!</green>'><click:run_command:'/duels accept %player%'>ACEPTAR</click></hover></b></green>"
+      request-received: "&b%player% &ate está enviando una solicitud de duelo."
+      target-already-in-duel: "&b%player% &cya está en un duelo."
+      cant-duel-yourself: "&c¡No puedes retarte a ti mismo a un duelo!"
+      request-already-sent: "&cYa has enviado una solicitud de duelo a &b%player%"
+    accept:
+      you-accepted-request: "&aHas aceptado la solicitud de duelo de &b%player%"
+      request-accepted: "&b%player% &aha aceptado tu solicitud de duelo."
+      already-in-duel: "&cNo puedes aceptar un duelo mientras juegas uno."
+      target-hasnt-sent-request: "&cEl jugador indicado no te ha enviado ninguna solicitud."
+    deny:
+      you-denied-request: "&aHas rechazado la solicitud de duelo de &b%player%"
+      someone-denied-your-request: "&b%player% &cha rechazado tu solicitud de duelo."
+      target-hasnt-sent-request: "&cEl jugador indicado no te ha enviado ninguna solicitud."
+    cancel:
+      request-cancelled: "&aTu solicitud de duelo ha sido cancelada."
+      someone-cancelled-request: "&b%player% &aha cancelado su solicitud hacia ti."
+    ignore:
+      player-is-ignoring-requests: "&c¡El jugador indicado está ignorando tus solicitudes de duelo!"
+      ignoring-on-player-enable: "&aAhora estás ignorando las solicitudes de duelo de &b%player%"
+      ignoring-on-player-disable: "&aYa no estás ignorando las solicitudes de duelo de &b%player%"
+    spectate:
+      is-not-in-duel: "&b%player% &cno está en un duelo!"
+      success: "&6Espectando a &b%player%"
+      is-spectating: "&b%player% &6está ahora espectando."
+      already-spectating: "&cYa estás en modo espectador. Por favor, sal del modo espectador primero con /duels stopspectating"
+      not-in-spectator: "&cNo estás en modo espectador."
+      spectate-end-success: "&aHas salido del modo espectador."
+    queue:
+      added: "&aTe has añadido a la cola."
+      removed: "&cTe has eliminado de la cola."
+  spectating:
+    cannot-damage-in-duel: "&cNo puedes dañar a los jugadores cuando están en duelo."
+    no-commands: "&cNo puedes usar ese comando en el modo espectador!"
+  restrictions-modules:
+    restrictions: "&6Restricciones:"
+    enabled-restrictions: " &aHabilitado: &b"
+    disabled-restrictions: " &aDeshabilitado: &b"
+    deny-message:
+      arrow: "&cEl uso de flechas no está permitido en este duelo."
+      potion: "&cEl uso de pociones está deshabilitado en este duelo."
+      golden-apple: "&cEl uso de manzanas doradas está deshabilitado en este duelo."
+      enchanted-golden-apple: "&cEl uso de manzanas doradas encantadas está deshabilitado en este duelo."
+      elytra: "&cEl uso de elytra está deshabilitado en este duelo."
+      ender-pearl: "&cEl uso de perlas de Ender está deshabilitado en este duelo."
+  other-modules:
+    keep-inventory: " &aConservar Inventario: &b%toggled%"
+    inventory-saving: " &aGuardar Inventario: &b%toggled%"
+    enabled: "&aHabilitado"
+    disabled: "&cDeshabilitado"
+  game:
+    duel-started: "&aEl duelo ha comenzado. ¡Prepara tus armas y tu suerte!"
+    duel-countdown: "&aEl duelo comienza en %color+countdown%s&a."
+
+    ran-out-of-time: "&cSe te acabó el tiempo, así que te has teletransportado al punto de aparición."
+
+    won-duel: "&a¡Ganaste el duelo! Serás teletransportado al punto de aparición en &b%number% &asegundos. Recoge sus objetos."
+    lost-duel: "&cPerdiste el duelo."
+arena-GUI:
+  size: 54
+  title: "&8Selecciona la arena de duelo."
+  available: "&a(Disponible)"
+  unavailable: "&c(No disponible)"
+  selected: "&a¡Seleccionado!"
+  not-selected: "&c¡No seleccionado!"
+  back:
+    item: ARROW
+    glowing: true
+    slot: 53
+    display-name: "&cAtrás"
+    lore: []
+  format:
+    item: MAP
+    glowing: true
+    display-name: "&6%name% %available%"
+    lore:
+      - "&7Estado: %status%"
+      - ""
+      - "&e¡Haz clic para seleccionar!"
+duel-GUI:
+  size: 27
+  title: "&8Personaliza las Restricciones de Tu Duelo"
+  restriction-enabled: "&a(Habilitado)"
+  restriction-disabled: "&c(Deshabilitado)"
+
+  toggle-bow:
+    item: BOW
+    slot: 0
+    glowing: true
+    display-name: "&aAlternar Arco %toggled%"
+    lore:
+      - "&7Alternar el uso del arco en el duelo."
+      - "&7Deshabilitar esto evitará que ambos"
+      - "&7jugadores disparen flechas."
+      - ""
+      - "&e¡Haz clic para alternar!"
+  toggle-totem:
+    slot: 1
+    item: TOTEM_OF_UNDYING
+    glowing: false
+    display-name: "&aAlternar Tótem %toggled%"
+    lore:
+      - "&7Alternar el uso del tótem en el duelo."
+      - "&7Deshabilitar esto evitará que ambos"
+      - "&7jugadores usen el tótem."
+      - ""
+      - "&e¡Haz clic para alternar!"
+  toggle-golden-apple:
+    slot: 2
+    item: GOLDEN_APPLE
+    glowing: false
+    display-name: "&aAlternar Manzana Dorada %toggled%"
+    lore:
+      - "&7Alternar el uso de la manzana dorada en el duelo."
+      - "&7Deshabilitar esto evitará que ambos"
+      - "&7jugadores usen la manzana dorada."
+      - ""
+      - "&e¡Haz clic para alternar!"
+  toggle-enchanted-golden-apple:
+    slot: 3
+    item: ENCHANTED_GOLDEN_APPLE
+    display-name: "&aAlternar Manzana Dorada Encantada %toggled%"
+    lore:
+      - "&7Alternar el uso de la manzana dorada encantada en el duelo."
+      - "&7Deshabilitar esto evitará que ambos jugadores"
+      - "&7usen la manzana dorada encantada."
+      - ""
+      - "&e¡Haz clic para alternar!"
+  toggle-potion:
+    slot: 4
+    item: POTION
+    glowing: false
+    display-name: "&bAlternar Pociones %toggled%"
+    lore:
+      - "&7Alternar el uso de pociones en el duelo."
+      - "&7Deshabilitar esto evitará que ambos"
+      - "&7jugadores usen pociones."
+      - ""
+      - "&e¡Haz clic para alternar!"
+  toggle-shield:
+    slot: 5
+    item: SHIELD
+    glowing: false
+    display-name: "&bAlternar Escudos %toggled%"
+    lore:
+      - "&7Alternar el uso de escudos en el duelo."
+      - "&7Deshabilitar esto evitará que ambos"
+      - "&7jugadores usen escudos."
+      - ""
+      - "&e¡Haz clic para alternar!"
+  toggle-elytra:
+    slot: 6
+    item: ELYTRA
+    glowing: true
+    display-name: "&aAlternar Elytra %toggled%"
+    lore:
+      - "&7Alternar el uso de elytra en el duelo."
+      - "&7Deshabilitar esto evitará que ambos"
+      - "&7jugadores planeen."
+      - ""
+      - "&e¡Haz clic para alternar!"
+  toggle-ender-pearl:
+    slot: 7
+    item: ENDER_PEARL
+    glowing: true
+    display-name: "&aAlternar Perla de Ender %toggled%"
+    lore:
+      - "&7Alternar el uso de la perla de Ender en el duelo."
+      - "&7Deshabilitar esto evitará que ambos"
+      - "&7jugadores usen la perla de Ender."
+      - ""
+      - "&e¡Haz clic para alternar!"
+  toggle-keep-inventory:
+    slot: 25
+    item: ENDER_CHEST
+    glowing: false
+    display-name: "&6Conservar Inventario & EXP. Actualmente está: %toggled%"
+    lore:
+      - "&7Alternar Conservar Inventario en el duelo."
+      - "&7Habilitar esto evitará que ambos"
+      - "&7jugadores pierdan sus objetos."
+      - ""
+      - "&e¡Haz clic para alternar!"
+  toggle-inventory-saving:
+    slot: 24
+    item: RESPAWN_ANCHOR
+    glowing: true
+    display-name: "&dGuardar Inventario. Actualmente está: %toggled%"
+    lore:
+      - "&7Alternar Guardar Inventario en el duelo."
+      - "&7Con esto puedes establecer si"
+      - "&7entrarás al duelo con tus objetos."
+      - ""
+      - "&e¡Haz clic para alternar!"
+  arena-selector:
+    slot: 22
+    item: MAP
+    glowing: true
+    display-name: "&6Selector de Arena"
+    lore:
+      - "&7Selecciona la arena PvP donde lucharás."
+      - "&7Deja esto como está si quieres usar"
+      - "&7una arena aleatoria."
+      - ""
+      - "&e¡Haz clic para abrir!"
+  cancel:
+    slot: 18
+    item: BARRIER
+    glowing: false
+    display-name: "&cCancelar"
+    lore:
+      - "&7Cancelar solicitud de duelo."
+      - ""
+      - "&e¡Haz clic para cancelar!"
+  start:
+    slot: 26
+    item: LIME_DYE
+    glowing: false
+    display-name: "&aIniciar"
+    lore:
+      - "&7Iniciar duelo con &b%player%&7."
+      - ""
+      - "&e¡Haz clic para iniciar!"

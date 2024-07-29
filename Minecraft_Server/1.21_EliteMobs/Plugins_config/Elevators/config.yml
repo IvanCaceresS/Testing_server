@@ -1,0 +1,57 @@
+Elevator:
+  BlockType: IRON_BLOCK
+  BlockDistance: 100
+  EnableParticle: true
+  ParticleType: SPELL_WITCH
+  ParticleCount: 20
+  UsageSound: entity.enderman.teleport
+  ActivateSound: entity.player.levelup
+Teleporter:
+  BlockType: SEA_LANTERN
+  EnableParticle: true
+  UsageSound: entity.enderman.teleport
+  WarmupTime: 3
+Hooks:
+  GriefPrevention: true
+  GriefDefender: true
+  WorldGuard: true
+Cooldown:
+  EnableCooldown: false
+  Time: 30
+  Locale: '&cEl ascensor está en tiempo de espera. Por favor espera %time% segundos más!'
+ElevatorLocale:
+  ElevatorUp: '&aSubiendo'
+  ElevatorDown: '&aBajando'
+  ElevatorDanger: '&4¡Peligro! No puedes usar el ascensor para esta ubicación. ¡Podrías morir!'
+  ElevatorActivated: '&aEl ascensor está activo'
+TeleporterLocale:
+  Danger: '&c¡Peligro! La ubicación no es segura!'
+  LinkSelf: '&cNo puedes enlazar al mismo teletransportador.'
+  Cancelled: '&c¡Teletransportación cancelada!'
+  Initialized: '&bTeletransportación iniciada'
+  Warmup: '&bPor favor espera &9%time% &bsegundos mientras el teletransportador se prepara! ¡No te muevas!'
+  UnvalidBlock: '&c¡Bloque de teletransportador no válido detectado, debe ser: linterna marina!'
+  Exist: '&c¡Este teletransportador ya existe!'
+  Unexist: '&cUno o más teletransportadores no existen. Verifica errores ortográficos.'
+  Added: '&eEl teletransportador ha sido añadido como &6%tpname%'
+  LinkExist: '&cUno o más teletransportadores ya están enlazados.'
+  NoOwner: '&cNo tienes permiso para enlazar esos teletransportadores.'
+  Linked: '&eHas enlazado exitosamente el teletransportador &6%teleport1% &econ &6%teleport2%'
+  Removed: '&eEl teletransportador &6%tpname% &eha sido eliminado'
+  Unlinked: '&6%teleport1% &eha sido desenlazado exitosamente de &6%teleport2%'
+  NoDestination: '&c¡%tpname% no tiene destino!'
+  ListHeader: '&e---- ====== [ &6Tus teletransportadores &e] ====== ----'
+  ListNoTeleporters: '&cAún no tienes teletransportadores'
+  SpecifyTeleporter: '&c¡Por favor especifica un teletransportador!'
+  SpecifyMoreTeleporter: '&c¡Por favor especifica al menos dos teletransportadores!'
+  PermissionBlocks: '&c¡No tienes permiso para establecer más teletransportadores!'
+  HelpHeader: '&e---- ====== [ &6Teletransportadores &e] ====== ----'
+  HelpAdd: '&6/teleporter add &f- &eEstablecer bloque de teletransportación'
+  HelpHelp: '&6/teleporter help &f- &eEsta página de ayuda'
+  HelpLink: '&6/teleporter link &f[tpblock1] [tpblock2] - &eEnlazar dos bloques de teletransportación juntos'
+  HelpList: '&6/teleporter list &f- &eObtener una lista de todos tus teletransportadores'
+  HelpRemove: '&6/teleporter remove &f- &eEliminar un bloque de teletransportación'
+  HelpUnlink: '&6/teleporter unlink &f[tpblock1] - &eDesenlazar dos bloques de teletransportación. Solo necesitas especificar uno.'
+MiscellaneousLocale:
+  Permission: '&cLo siento, pero no tienes permisos para hacer eso.'
+
